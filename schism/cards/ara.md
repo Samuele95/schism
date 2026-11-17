@@ -1,5 +1,7 @@
 # Card — ARA: Arbitrary-Rank Ablation
 
+*Arbitrary-Rank Ablation was developed by Philipp Emanuel Weidmann ([@p-e-w](https://github.com/p-e-w)) for [Heretic](https://github.com/p-e-w/heretic), where it is the default modifier. This card describes the method for an agent to implement; it contains no Heretic code.*
+
 **What it buys.** The default modifier: no direction, no rank-1 assumption. Each writer's edit is fitted to what that writer actually emits, so that harmful outputs land among real harmless outputs while harmless outputs stay where they were.
 
 ## Capture

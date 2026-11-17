@@ -27,6 +27,7 @@
 <p class="crumb">Technique card</p>
 <p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/ara.md"><code>schism/cards/ara.md</code></a>, as written.</p>
 <h1 id="card-ara-arbitrary-rank-ablation">Card — ARA: Arbitrary-Rank Ablation</h1>
+<p><em>Arbitrary-Rank Ablation was developed by Philipp Emanuel Weidmann (<a href="https://github.com/p-e-w">@p-e-w</a>) for <a href="https://github.com/p-e-w/heretic">Heretic</a>, where it is the default modifier. This card describes the method for an agent to implement; it contains no Heretic code.</em></p>
 <p><strong>What it buys.</strong> The default modifier: no direction, no rank-1 assumption. Each writer&#39;s edit is fitted to what that writer actually emits, so that harmful outputs land among real harmless outputs while harmless outputs stay where they were.</p>
 <h2 id="capture">Capture</h2>
 <p>For every writer in the layer range, hook it (<a href="../cards/stream-and-capture.html"><code>cards/stream-and-capture.md</code></a>) and record at the last prompt token, for fit-split good and bad prompts: inputs Z_g, Z_b (one row per prompt, d_in wide) and outputs Y_g, Y_b (d wide). Captured once, from the unedited model, kept on CPU.</p>

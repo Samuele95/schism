@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560">
+<defs>
+  <radialGradient id="vg" cx="50%" cy="45%" r="75%"><stop offset="0" stop-color="#0d0d12"/><stop offset="1" stop-color="#07070a"/></radialGradient>
+  <clipPath id="card"><rect width="1280" height="560" rx="14"/></clipPath>
+  
+</defs>
+<g clip-path="url(#card)">
+<rect width="1280" height="560" fill="url(#vg)"/>
+<text x="40.0" y="46.0" fill="rgba(232,226,212,0.55)" text-anchor="start" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:16px;letter-spacing:0.3em;font-variant:small-caps;">the tournament</text>
+<text x="1240.0" y="46.0" fill="rgba(232,226,212,0.55)" text-anchor="end" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:12px;letter-spacing:0em;">Alchemist runs it  ·  Prometheus writes every prompt in it</text>
+<rect x="48" y="200" width="220" height="96" rx="3" fill="#07070a" stroke="#e8e2d4" stroke-width="1" opacity="0.95"/>
+<text x="158.0" y="230.0" fill="#e8e2d4" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:19px;letter-spacing:0em;">The hand that cuts</text>
+<text x="158.0" y="252.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">Smith · operator compiler</text>
+<text x="158.0" y="268.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">one candidate per call</text>
+<rect x="340" y="200" width="190" height="96" rx="3" fill="#07070a" stroke="#e8e2d4" stroke-width="1" opacity="0.95"/>
+<text x="435.0" y="230.0" fill="#e8e2d4" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:19px;letter-spacing:0em;">Bench</text>
+<text x="435.0" y="252.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">apply · run dev · reset</text>
+<text x="435.0" y="268.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">decides nothing</text>
+<line x1="268" y1="248" x2="338" y2="248" stroke="#e8e2d4" stroke-width="1" opacity="0.8"/>
+<path d="M330.8,251.5 L338,248 L330.8,244.5" fill="none" stroke="#e8e2d4" stroke-width="1" opacity="0.8"/>
+<text x="303.0" y="240.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">candidate</text>
+<rect x="640" y="92" width="230" height="72" rx="3" fill="#07070a" stroke="#59ff9c" stroke-width="1" opacity="0.9"/>
+<text x="755.0" y="122.0" fill="#59ff9c" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:16px;letter-spacing:0em;">T1 · behaviour</text>
+<text x="755.0" y="144.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:13px;letter-spacing:0em;font-style:italic;">is it gone?</text>
+<line x1="530" y1="248" x2="638" y2="128" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<path d="M635.8,135.7 L638,128 L630.6,131.0" fill="none" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<line x1="634" y1="173" x2="876" y2="173" stroke="#e8e2d4" stroke-width="2.2" opacity="0.35"/>
+<line x1="634" y1="178" x2="876" y2="178" stroke="#e8e2d4" stroke-width="0.6" opacity="0.35"/>
+<rect x="640" y="182" width="230" height="72" rx="3" fill="#07070a" stroke="#59ff9c" stroke-width="1" opacity="0.9"/>
+<text x="755.0" y="212.0" fill="#59ff9c" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:16px;letter-spacing:0em;">T2 · preservation</text>
+<text x="755.0" y="234.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:13px;letter-spacing:0em;font-style:italic;">did the rest move?</text>
+<line x1="530" y1="248" x2="638" y2="218" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<path d="M632.0,223.3 L638,218 L630.1,216.6" fill="none" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<line x1="634" y1="263" x2="876" y2="263" stroke="#e8e2d4" stroke-width="2.2" opacity="0.35"/>
+<line x1="634" y1="268" x2="876" y2="268" stroke="#e8e2d4" stroke-width="0.6" opacity="0.35"/>
+<rect x="640" y="272" width="230" height="72" rx="3" fill="#07070a" stroke="#59ff9c" stroke-width="1" opacity="0.9"/>
+<text x="755.0" y="302.0" fill="#59ff9c" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:16px;letter-spacing:0em;">T3 · capability</text>
+<text x="755.0" y="324.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:13px;letter-spacing:0em;font-style:italic;">can it still do the work?</text>
+<line x1="530" y1="248" x2="638" y2="308" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<path d="M630.0,307.5 L638,308 L633.4,301.5" fill="none" stroke="#e8e2d4" stroke-width="0.8" opacity="0.55"/>
+<line x1="634" y1="353" x2="876" y2="353" stroke="#e8e2d4" stroke-width="2.2" opacity="0.35"/>
+<line x1="634" y1="358" x2="876" y2="358" stroke="#e8e2d4" stroke-width="0.6" opacity="0.35"/>
+<rect x="640" y="362" width="230" height="72" rx="3" fill="#07070a" stroke="#59ff9c" stroke-width="1" opacity="0.9"/>
+<text x="755.0" y="392.0" fill="#59ff9c" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:16px;letter-spacing:0em;">T4 · Goodhart</text>
+<text x="755.0" y="414.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:13px;letter-spacing:0em;font-style:italic;">was it gamed?</text>
+<line x1="530" y1="248" x2="638" y2="398" stroke="#e8e2d4" stroke-width="1.6" opacity="0.9"/>
+<path d="M631.0,394.2 L638,398 L636.6,390.1" fill="none" stroke="#e8e2d4" stroke-width="1.6" opacity="0.9"/>
+<text x="755.0" y="452.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">kept apart: each sees only its own slice</text>
+<text x="755.0" y="468.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">T4 alone sees the whole bundle</text>
+<rect x="990" y="200" width="240" height="96" rx="3" fill="#07070a" stroke="#e8e2d4" stroke-width="1" opacity="0.95"/>
+<text x="1110.0" y="230.0" fill="#e8e2d4" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:19px;letter-spacing:0em;">The judge</text>
+<text x="1110.0" y="252.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">Arbiter</text>
+<text x="1110.0" y="268.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">every verdict · the whole history</text>
+<line x1="872" y1="128" x2="988" y2="248" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<path d="M980.5,245.2 L988,248 L985.5,240.4" fill="none" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<line x1="872" y1="218" x2="988" y2="248" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<path d="M980.2,249.6 L988,248 L981.9,242.8" fill="none" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<line x1="872" y1="308" x2="988" y2="248" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<path d="M983.2,254.4 L988,248 L980.0,248.2" fill="none" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<line x1="872" y1="398" x2="988" y2="248" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<path d="M986.3,255.8 L988,248 L980.8,251.6" fill="none" stroke="#59ff9c" stroke-width="0.8" opacity="0.6"/>
+<text x="930.0" y="104.0" fill="#59ff9c" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">verdicts</text>
+<path d="M1110,298 L1110,516 L158,516 L158,300" fill="none" stroke="#e8e2d4" stroke-width="1.2" opacity="0.85"/>
+<path d="M153,308 L158,298 L163,308" fill="none" stroke="#e8e2d4" stroke-width="1.2"/>
+<text x="634.0" y="506.0" fill="#e8e2d4" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'EB Garamond', Georgia, serif;font-size:13px;letter-spacing:0em;font-style:italic;">one fix — the only thing the hand that cuts ever receives</text>
+<text x="158.0" y="146.0" fill="#e0402f" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:13px;letter-spacing:0em;">never sees a verdict</text>
+<text x="158.0" y="166.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">a compiler that sees which test failed</text>
+<text x="158.0" y="182.0" fill="rgba(232,226,212,0.55)" text-anchor="middle" font-weight="400" opacity="1" style="font-family:'JetBrains Mono', ui-monospace, monospace;font-size:11px;letter-spacing:0em;">learns to satisfy the test</text>
+</g>
+<rect x="0.5" y="0.5" width="1279" height="559" rx="14" fill="none" stroke="rgba(232,226,212,0.10)"/>
+</svg>

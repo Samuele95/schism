@@ -1,113 +1,69 @@
 <p align="center">
-  <a href="https://samuele95.github.io/schism/"><img src="docs/stills/S9.webp" alt="The held cut: a red plume of points suspended above a white disc, the red axis severed at the blade's edge." width="100%"></a>
+  <a href="https://samuele95.github.io/schism/"><img src="assets/banner.png" alt="SCHISM — σχίσμα, a cleft, a division. Decide what your model stops doing. Prove the rest held." width="100%"></a>
 </p>
 
-<h1 align="center">S C H I S M</h1>
-
-<p align="center"><i>σχίσμα — a cleft, a division</i></p>
-
-<p align="center"><b>Decide what your model stops doing. Prove the rest held.</b></p>
-
 <p align="center">
-  <a href="https://samuele95.github.io/schism/">Watch the film</a> ·
-  <a href="https://samuele95.github.io/schism/read/">Read the method</a> ·
-  <a href="USAGE.md">Install and run</a> ·
+  <a href="https://samuele95.github.io/schism/"><b>Watch the film</b></a> &nbsp;·&nbsp;
+  <a href="https://samuele95.github.io/schism/read/">Read the method</a> &nbsp;·&nbsp;
+  <a href="USAGE.md">Install and run</a> &nbsp;·&nbsp;
   <a href="LICENSE">MIT</a>
 </p>
 
----
+<br>
 
-**One set of weights. More than one personality.** *The flatterer. The rambler. The one that loops.*
+A language model is one set of weights with more than one personality in it. There is the one that answers your question, and there is the one that flatters you while it does. There is the one that rambles, the one that pads every reply with the same tired phrases, the one that gets caught in a loop and cannot find its way out.
 
-Schism splits one of them off. Everything else is left as it was — and it proves both.
+Schism is an agent skill for separating one of those personalities from the rest — and for proving, afterwards, that the separation was clean. It works one behaviour at a time: slop, sycophancy, verbosity, humor, tone, looping. When the weights are open, it operates on the matrices themselves. When they are not, it makes the incision in language instead, with a prompt operator whose effect is measured on the geometry of the model's answers. Either way the claim it has to earn has two halves: *this behaviour is gone*, and *nothing else moved*.
 
-It is an agent skill for engineering a language model's behaviour, one behaviour at a time: slop, sycophancy, verbosity, humor, tone, looping. On open weights it operates on the matrices themselves. On a closed model no blade reaches the weights, so the incision is made in language: a prompt operator, measured on the geometry of its answers. It is not for training or fine-tuning.
-
-There is nothing to compile. Schism is a method — fifteen technique cards, eight role prompts, a run protocol — that a capable LLM agent carries out itself. The agent implements each technique from its card, checks it against the card's self-check, and only then trusts it. What it has checked, it keeps for the next run.
-
-<table>
-  <tr>
-    <td width="33%"><img src="docs/stills/S2.webp" alt="A weight matrix of green digits between engraved brackets."></td>
-    <td width="33%"><img src="docs/stills/S7.webp" alt="Engraved armillary rings around a cloud of points; a red axis through two marked means."></td>
-    <td width="33%"><img src="docs/stills/S12.webp" alt="A red seal breaking into digits beside an empty grid of intervals."></td>
-  </tr>
-  <tr>
-    <td align="center"><sub>the weights are numbers</sub></td>
-    <td align="center"><sub>II · Map — locate it</sub></td>
-    <td align="center"><sub>V · Seal — opened once</sub></td>
-  </tr>
-</table>
+There is nothing to compile. Schism is written as a method — a run protocol, fifteen technique cards, eight role prompts — for a capable LLM agent to carry out itself. The agent implements each technique from its card, checks the implementation against the card's own self-check, and only then lets it touch a model. What it has checked once, it keeps for every later run.
 
 ## The operation
 
-Five phases. Each one is a gate; nothing passes it on trust.
+<p align="center"><img src="assets/phases.png" alt="The five phases: I Frame, II Map, III Floor, IV Tournament, V Seal." width="100%"></p>
 
-### I · Frame — *name the personality you want gone*
+A run is a sequence of five phases, and each one is a gate.
 
-Show it, then show its absence. The behaviour becomes two observable conditions — what the answers look like with it, and without it — and two prompt sets that differ only there. Choosing the prompts *is* defining what will be cut, so the design is audited for confounds before anything runs. Then the prompts are split four ways — fit, probe, dev, vault — and the vault is sealed and hashed before anything is touched.
+It begins with **Frame**, where the behaviour stops being a word and becomes something you can measure. You name the personality you want gone, then show it, and show its absence: two observable conditions, one sentence each, and two sets of prompts that differ only there. Choosing those prompts is defining what will be cut, so the design is audited for confounds before anything runs. The prompts are then divided into four disjoint splits, and one of them — the vault — is sealed and hashed before any edit exists.
 
-### II · Map — *locate it*
+**Map** asks where the behaviour lives. The Cartographer reads the residual stream at the moment the model is about to give its first word, reads the weights and the attention that write into it, and returns a hypothesis with its evidence. Then comes the feasibility gate. If the behaviour can be switched off, the run goes on. If it lives nowhere in particular, the operation is called off and the record says why — because editing can remove an obstacle, but it cannot give a model an ability it never had.
 
-The Cartographer captures the residual stream at the decision token, reads the weights and the attention, and writes a hypothesis of where the behaviour lives, with its evidence. Then the feasibility gate: *switchable*, *diffuse*, *absent* or *inconclusive*. If it lives nowhere, the operation is called off and the record says why — a result, not a failure. Editing can remove an obstacle. It cannot add an ability that isn't there.
+**Floor** is the standard procedure, done properly: the baseline pipeline — Arbitrary-Rank Ablation by default, the method Philipp Emanuel Weidmann developed for [Heretic](https://github.com/p-e-w/heretic), or classic directional ablation — searched in full. Its best result becomes candidate zero, and candidate zero sets the mark. Everything after it starts from there, so Schism can only match the standard procedure or go further — never fall below it.
 
-### III · Floor — *the standard procedure goes first*
+**Tournament** is where the cut is refined, and it is described below. **Seal** is where the vault is finally opened: every surviving candidate is scored on it exactly once and set head-to-head against the floor. A number used to choose a candidate always flatters it; the vault chose nothing, which is why its verdict is the one that counts. A difference is called real only when it clears the vault's own sampling noise, and if all Schism manages is to match the floor at a higher cost, then that is the result, and the report says so.
 
-The baseline pipeline (Arbitrary-Rank Ablation by default, or directional ablation) searched in full with multi-objective TPE. Its best trial is **candidate zero**, and it sets the mark. The tournament starts from it — so it can only match the floor, or go further.
+## The cut
 
-### IV · Tournament — *sever one direction; nothing else*
+<p align="center"><img src="assets/cut.png" alt="Before: a disc of ordinary answers and a red plume displaced above it along one direction. After: the plume has fallen into the disc; the disc has not moved." width="100%"></p>
 
-An [Alchemist](#the-family) tournament, run once per preservation tier, loosest to tightest. The removal target is fixed by the floor, so each tighter tier buys preservation at equal removal.
+The simplest of the edits shows the idea most clearly. Capture what the model is about to say, for prompts with the behaviour and without it, and the two clouds sit apart: the answers with the behaviour are displaced along one direction, the difference between the two means. Directional ablation removes exactly that component from what the model writes, and nothing else. Every point keeps its other coordinates, so the plume falls back into the disc while the disc stays where it was. The original weights are never overwritten: the edit lives beside them, in an adapter, and the untouched model remains the reference every number is measured against.
 
-- **The hand that cuts never sees a verdict.** The Smith (weights) or the operator compiler (closed models) proposes one candidate per call and receives only the next instruction — because a compiler that sees which test failed learns to satisfy the test.
-- **Four examiners, kept apart.** Behaviour, preservation, capability, Goodhart. Each sees only its own slice of the evidence; the Goodhart tester sees all of it, and assumes gaming until the evidence says otherwise.
-- **One judge.** The Arbiter reads every verdict and the whole history, never the raw answers, and orders one fix.
+Most behaviours are not that tidy, which is why the default edit, ARA, assumes no single direction at all, and why the cards also cover narrower surgery on individual neurons and attention heads. But the question is always the one in the figure: what moved, and what didn't.
 
-A proven barrier ends the ratchet, and is reported as the tightest tier that holds.
+## The tournament
 
-### V · Seal — *opened once*
+<p align="center"><img src="assets/tournament.png" alt="The tournament: the hand that cuts proposes a candidate; the bench measures it; four examiners, walled off from each other, return verdicts to a judge; the judge sends one fix back." width="100%"></p>
 
-Every candidate on the front is scored once on the vault and set head-to-head against the floor. Every number that chose a candidate flatters it; the vault chose nothing. A difference counts only when it clears the vault's sampling noise. If Schism only matches the floor, at a higher cost — that is the result, and it is reported.
+The search for the cut is a tournament run by [Alchemist](#the-family), once for each preservation threshold, from the loosest to the tightest. The removal target stays fixed at what the floor achieved, so every tighter round is spent buying preservation, not trading it away.
+
+Its rules are about who is allowed to see what. The hand that cuts — the Smith on open weights, the operator compiler on closed models — proposes one candidate per call and never sees a verdict, only the single fix the judge sends back, because a compiler that knows which test failed learns to satisfy the test instead of the goal. Four examiners each check one thing and see only their own slice of the evidence: whether the behaviour is gone, whether everything else stayed put, whether the model can still do real work, and whether any of it was gamed. That last examiner sees everything, and assumes gaming until the evidence says otherwise. Above them sits a judge who reads every verdict and the whole history, never the raw answers, and names one fix. When two requirements cannot hold together, the tournament proves it and stops, and that boundary is reported as the tightest threshold the model allows.
 
 ## Two branches
 
-| | Weights branch | Semantic branch |
-|---|---|---|
-| **For** | open-weight models, local or on a remote GPU | closed models, reached through an API or agent |
-| **The edit** | a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy | a prompt operator: system prompt, prefix or suffix |
-| **Preservation** | first-token KL on neutral prompts (default tiers 0.40 · 0.20 · 0.10) | drift on neutral prompts, against the sampling noise floor (2.0× · 1.5× · 1.2×) |
-| **How results are worded** | *this edited model* | *this model, with this operator* — never a changed model |
+<p align="center"><img src="assets/branches.png" alt="Open weights: the matrix W, never overwritten, with an adapter B·A beside it. Closed models: an untouched model, a prompt operator going in, and answers measured as embeddings." width="100%"></p>
+
+On **open weights** the edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy, and preservation is measured as how far the edit moves the model's first word on prompts that have nothing to do with the behaviour. On **closed models** no blade reaches the weights, so the incision is made in language: a system prompt, prefix or suffix, designed through Prometheus and measured on the embeddings of the answers it produces, against how much two unedited samples already differ. A result on that side is always worded as *this model, with this operator*. The model itself is never changed, and Schism never says it was.
 
 ## What comes back
 
-Every operation is on the record.
-
-| Path | What it holds |
-|---|---|
-| `seal/report.md` | the outcome in its first sentence — chosen candidate, vault scores, against the floor — then the front, then what needs your attention |
-| `exports/<candidate>/` | the edit, as merged weights or an adapter, always in a new folder — never the model's own |
-| `ledger.md` | everything the run did, in order: phases, hypotheses, budgets, deviations, decisions |
-| `seal/manifest.json` | what it takes to replay the run: brief, hashes, every front candidate's spec, environment |
-
-## Ground rules
-
-- **Nothing is overwritten.** Edits live beside the weights, in adapters, and come out clean. The original is the measure of everything.
-- **Four disjoint splits, fixed at the start.** The vault is scored once, at the end, by the Seal alone.
-- **Budgets are part of the experiment.** Forward passes, iterations, samples — all counted in the ledger. A result without its budget can't be read.
-- **Implement, check, then trust.** A failed self-check stops that technique.
-- **Every prompt goes through Prometheus.** A prompt written by hand inside a run is a defect — the measurement stimuli and the floor's own operator are the only exceptions.
+Every operation is on the record. A run leaves a report whose first sentence is the outcome — the chosen candidate, its scores on the vault, and how it compares with the floor — followed by the full front of candidates and anything that needs your attention. The chosen edit is exported to a new folder, as merged weights or as an adapter, never into the model's own. Alongside it sit the ledger, an append-only account of everything the run did in the order it did it, and a manifest with what anyone needs to replay it.
 
 ## The family
 
-| Skill | Owns |
-|---|---|
-| **Schism** | the method: technique cards, contrast design, the map, the gate, the floor, the vault, the front, the ledger, the export |
-| **Alchemist** *(required)* | the search: compiler → isolated testers → judge with history, to convergence or a proven barrier |
-| **[Prometheus](https://github.com/Samuele95/prometheus)** *(required)* | every prompt: rubrics, role prompts, operator candidates |
-| **Weight Space Programming** *(optional)* | general weight reading and writing, when installed |
+Schism owns the method: the cards, the contrast design, the map and its gate, the floor, the vault, the ledger. It leans on two siblings for the rest. **Alchemist** runs the search — compiler, isolated testers, a judge with memory — until the candidates converge or a barrier is proven. **[Prometheus](https://github.com/Samuele95/prometheus)** writes every prompt the run uses, from the judges' rubrics to the operators on the closed-model side; a prompt written by hand inside a run is treated as a defect, with the measurement prompts and the floor's own operator the only exceptions. **Weight Space Programming**, when it is installed, takes over general reading and writing of weights.
 
-## Install and run
+## Running it
 
-Place [`schism/`](schism/) in the skills folder your agent loads from, next to `alchemist/` and `prometheus/`. Then name the behaviour, the model, and how you're running it:
+Install by placing [`schism/`](schism/) in the skills folder your agent loads from, next to `alchemist/` and `prometheus/`. Then tell the agent what you want gone, from which model, and whether you will be there to answer questions:
 
 ```text
 Use Schism to reduce slop in Qwen3-4B-Instruct. I'm here, ask me if something is ambiguous.
@@ -117,50 +73,26 @@ Use Schism to reduce slop in Qwen3-4B-Instruct. I'm here, ask me if something is
 Use Schism on the semantic branch to make this model less sycophantic.
 ```
 
-Unattended, overnight: copy [`schism/assets/run-brief.yaml`](schism/assets/run-brief.yaml), set `deployment: unattended` and `approved: true`, and point the agent at it. Without `approved: true`, Schism builds the tournament harness and stops after the floor: a live tournament spends tokens nobody approved.
+With you present, Schism asks at three moments only: to confirm the brief, to settle borderline examples for the judges, and to let you choose from the final candidates. To run it overnight instead, copy [`schism/assets/run-brief.yaml`](schism/assets/run-brief.yaml), set `deployment: unattended` and `approved: true`, and point the agent at it; without that approval it builds the whole harness and stops before spending anything on a live tournament.
 
-**First run:** a calibration run on a small open model (about 1–2B parameters) with the slop preset. It checks the agent's implementations once; every later run on that machine reuses them.
+Make the first run a calibration run on a small open model, around one or two billion parameters, with the slop preset. It checks the agent's implementations once, and every run after it on the same machine inherits them. Requirements, model choices and rough costs are in **[USAGE.md](USAGE.md)**.
 
-Requirements, models and reasoning effort, and rough costs are in **[USAGE.md](USAGE.md)**.
+## What it does not claim
 
-## What Schism does not claim
+Schism ships a method and the means to check it, not results. The skill was not run while it was being designed, and nothing here reports a removal rate, a preservation score, or a win over the standard procedure. [`delivery/EMPIRICAL-TEST.md`](delivery/EMPIRICAL-TEST.md) describes how to find out honestly: acceptance tests first, then a head-to-head against the baseline on two behaviours and two model sizes, because a single run is an anecdote. The cost figures in the usage notes are estimates. The results from the Weight Space Programming paper that the cards cite (Takehi et al., 2026) are that paper's early findings on one model family, not Schism's.
 
-Schism ships a method and its verifiers, not results. The skill was not run during its design, and nothing here reports a removal rate, a preservation score or a win over the baseline. [`delivery/EMPIRICAL-TEST.md`](delivery/EMPIRICAL-TEST.md) specifies how to find out: acceptance tests, then a head-to-head against the baseline pipeline on two behaviours and two model sizes — because one run is an anecdote. The cost figures in [USAGE.md](USAGE.md) are rough, not measured. The Weight Space Programming results quoted in the cards are a paper's early results on one model family (Takehi et al., 2026), not Schism's.
+## Inside the repository
 
-## In this repository
+[`schism/`](schism/) is the skill itself: `SKILL.md` with the method and its ground rules, the run protocol and coordination contracts in `references/`, the fifteen technique cards in `cards/`, the eight role prompts in `roles/`, and run templates in `assets/`. [`USAGE.md`](USAGE.md) covers installation and running, and [`delivery/`](delivery/) records how the package was designed: the Prometheus audit, the verifier specification, two verifier prompts and the empirical test plan.
 
-```text
-schism/              the skill — install this folder
-├── SKILL.md         the method: ground rules, doubt, the run, failure modes, report
-├── references/      run protocol (phase by phase) and coordination (roles, contracts)
-├── cards/           15 technique cards: stream, contrasts, directions, ablation, ARA,
-│                    LoRA, meters, judges, TPE, floor and vault, locating, WSP, semantic branch
-├── roles/           8 role prompts: Cartographer, Smith, operator compiler,
-│                    four testers, Arbiter
-└── assets/          run brief, Alchemist run config, ledger and report templates
-USAGE.md             install, run, models, rough cost
-delivery/            how the package was designed: Prometheus audit, verifier spec,
-                     static and contract verifiers, empirical test plan
-docs/                the built site, served by GitHub Pages
-site/                the site's source
-├── content/         what the site may say: brief (every claim, with its source),
-│                    storyboard, lore, design system, reading-room plan
-├── chain/           the five-stage Prometheus chain that designed and built it
-├── src/, scripts/   three.js film, reading-room generator
-└── tools/           headless capture and checks
-```
+The website lives in [`docs/`](docs/) and is served by GitHub Pages; its source is in [`site/`](site/). It is a single continuous take, scrubbed by scroll and built with three.js, and every sentence on it carries the id of the claim it rests on in [`site/content/brief.md`](site/content/brief.md). Its reading room renders this repository's own files as they are, and visitors without WebGL, or who prefer reduced motion, get the same story as a sequence of stills. To work on it, run `npm ci` and `npm run dev` inside `site/`; `npm run build` regenerates the reading room and writes `docs/`. The figures in this README are drawn by [`assets/src/figures.py`](assets/src/figures.py).
 
-## The site
+## Acknowledgements
 
-[samuele95.github.io/schism](https://samuele95.github.io/schism/) is a single continuous take, scrubbed by scroll: code rain condensing into a weight matrix, the matrix lifting into an activation space, a search, a cut, a held moment, a collapse, a seal broken once. Every line on screen carries the id of the claim it rests on (`site/content/brief.md`), and the reading room renders this repository's own files as they are. With reduced motion or without WebGL, the film becomes a sequence of stills with all of its text.
+Schism stands on [**Heretic**](https://github.com/p-e-w/heretic) by **Philipp Emanuel Weidmann** ([@p-e-w](https://github.com/p-e-w)). Arbitrary-Rank Ablation, the default edit in Schism's floor and tournament, is his method, developed for Heretic and introduced there in 2026. Heretic is also the reference for the floor as a whole: directional ablation applied through LoRA adapters, response prefixes for reasoning models, and a TPE search that trades a keyword rate against KL divergence. Schism re-describes these techniques as cards for an agent to implement and check; it contains none of Heretic's code, which is released under the AGPL-3.0.
 
-```bash
-cd site
-npm ci
-npm run dev     # local preview; add ?debug for frame time
-npm run build   # regenerates the reading room and writes docs/
-```
+The idea of reading and writing weights directly, and the limits Schism keeps as rules, come from the Weight Space Programming paper (Takehi et al., 2026).
 
 ## Licence
 
-[MIT](LICENSE) © 2026 Samuele Stronati
+Released under the [MIT licence](LICENSE). © 2026 Samuele Stronati.
