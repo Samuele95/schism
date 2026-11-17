@@ -12,7 +12,7 @@ Schism is an agent skill, a method written as technique cards and role prompts t
 
 ## 3. What a run hands back
 
-- **The report** (`seal/report.md`): it leads with one sentence naming the chosen candidate, its vault behaviour score and preservation score, and how it compares with the floor; then the front; then the head-to-head against the floor; then what needs the user's attention: deviations, inconclusive gates, exhausted budgets, anything that leaked. [C-65, C-66]
+- **The report** (`seal/report.md`) opens with one sentence that names the chosen candidate, gives its vault behaviour and preservation scores and compares it with the floor. The front and the head-to-head against the floor follow, and the report closes with what needs the user's attention: deviations, inconclusive gates, exhausted budgets, anything that leaked. [C-65, C-66]
 - **The export** (`exports/<candidate-id>/`): the chosen candidate, as merged weights or an adapter, always in a new folder, never the model's own. [C-31, C-54] On the semantic branch the deliverable is an operator: "this model with this operator". [C-17]
 - **The ledger** (`ledger.md`): the append-only record of the whole run: phases, hypotheses, budgets, deviations, decisions. [C-12, C-65]
 - **The manifest** (`seal/manifest.json`): what is needed to replay the run: brief, workbench file hashes, every front candidate's spec, vault scores, environment, file hashes. [C-55]
@@ -32,8 +32,11 @@ Five phases. [C-20]
 
 ## 5. Two branches
 
-- **Weights branch** — open-weight models loaded locally or on a remote GPU. The edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy and never written over the original. Preservation is measured as first-token KL on neutral prompts. [C-15, C-07, C-48]
-- **Semantic branch** — closed models with no weights to touch. The edit is a prompt operator; every geometric quantity is measured on embeddings of sampled responses; preservation is drift as a multiple of the sampling noise floor. Results are worded "with this operator", never as a change to the model. [C-16, C-17, C-58]
+The **weights branch** is for open-weight models loaded locally or on a remote GPU. There the edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy and never written over the original, and preservation is measured as first-token KL on neutral prompts. [C-15, C-07, C-48]
+
+The **semantic branch** is for closed models, which have no weights to touch. The edit becomes a prompt operator, every geometric quantity is measured on embeddings of sampled responses, and preservation is drift expressed as a multiple of the sampling noise floor, which is why results are worded "with this operator" and never as a change to the model. [C-16, C-17, C-58]
+
+On both branches the same three operations apply: ablating a behaviour, injecting one the model shows only when asked, or tuning the strength of the edit. [C-75, C-76]
 
 ## 6. The family
 

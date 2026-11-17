@@ -2,7 +2,7 @@
 
 ## What you have
 
-`schism/` is an agent skill: the method, 15 technique cards, the role prompts for its Alchemist tournament, and run templates. It contains no code. The agent writes and self-checks the code at run time, then keeps it in a `workbench/` folder for later runs.
+`schism/` is an agent skill for injecting, tuning or ablating one behaviour of a language model. It holds the method, 15 technique cards, the role prompts for its Alchemist tournament and the run templates, but no code: the agent writes the code at run time, checks it against each card's self-check and keeps it in a `workbench/` folder for later runs.
 
 ## Requirements
 
@@ -24,8 +24,9 @@ Name the behaviour, the model and how you are running it. For example:
 - *Unattended, overnight:* write the brief yourself (copy `schism/assets/run-brief.yaml`), set `deployment: unattended` and `approved: true`, then start the agent with "Run the Schism brief at runs/<id>/brief.yaml."
   Without `approved: true`, Alchemist builds the tournament harness and stops after the floor. A live tournament spends tokens nobody approved.
 - *Closed model:* "Use Schism on the semantic branch to make this model less sycophantic."
+- *Injecting a behaviour:* "Use Schism to make Qwen3-4B-Instruct answer in plain, terse English by default, the way it does when I ask for it." The contrast pair puts the instructed behaviour on the GOOD side, so the run makes it the default (`schism/SKILL.md`, Three operations).
 
-**First run:** do a calibration run before anything else. Use a small open model (about 1–2B parameters) and the slop preset. This checks the workbench's implementations against their self-checks, and every later run on that machine reuses the checked implementations.
+**First run:** before anything else, do a calibration run on a small open model (about 1–2B parameters) with the slop preset. It checks the workbench's implementations against their self-checks, and every later run on that machine reuses what it checked.
 
 ## Models and reasoning effort
 

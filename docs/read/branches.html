@@ -26,10 +26,9 @@
 <main id="main">
 <p class="crumb">Two branches</p>
 <h1>Two branches</h1>
-<ul>
-<li data-claim="C-15 C-07 C-48"><strong>Weights branch</strong> — open-weight models loaded locally or on a remote GPU. The edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy and never written over the original. Preservation is measured as first-token KL on neutral prompts.</li>
-<li data-claim="C-16 C-17 C-58"><strong>Semantic branch</strong> — closed models with no weights to touch. The edit is a prompt operator; every geometric quantity is measured on embeddings of sampled responses; preservation is drift as a multiple of the sampling noise floor. Results are worded &quot;with this operator&quot;, never as a change to the model.</li>
-</ul>
+<p data-claim="C-15 C-07 C-48">The <strong>weights branch</strong> is for open-weight models loaded locally or on a remote GPU. There the edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy and never written over the original, and preservation is measured as first-token KL on neutral prompts.</p>
+<p data-claim="C-16 C-17 C-58">The <strong>semantic branch</strong> is for closed models, which have no weights to touch. The edit becomes a prompt operator, every geometric quantity is measured on embeddings of sampled responses, and preservation is drift expressed as a multiple of the sampling noise floor, which is why results are worded &quot;with this operator&quot; and never as a change to the model.</p>
+<p data-claim="C-75 C-76">On both branches the same three operations apply: ablating a behaviour, injecting one the model shows only when asked, or tuning the strength of the edit.</p>
 
 <p>The full recipe for closed models is in <a href="cards/semantic-branch.html">the semantic-branch card</a>; the residual stream and its writers are in <a href="cards/stream-and-capture.html">the stream card</a>.</p>
 <nav class="pn" aria-label="Previous and next"><a href="run.html">← The run, phase by phase</a><a href="coordination.html">Coordination →</a></nav>

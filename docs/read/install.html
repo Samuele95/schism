@@ -28,7 +28,7 @@
 <p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/USAGE.md"><code>USAGE.md</code></a>, as written.</p>
 <h1 id="schism-install-and-run">Schism — install and run</h1>
 <h2 id="what-you-have">What you have</h2>
-<p><code>schism/</code> is an agent skill: the method, 15 technique cards, the role prompts for its Alchemist tournament, and run templates. It contains no code. The agent writes and self-checks the code at run time, then keeps it in a <code>workbench/</code> folder for later runs.</p>
+<p><code>schism/</code> is an agent skill for injecting, tuning or ablating one behaviour of a language model. It holds the method, 15 technique cards, the role prompts for its Alchemist tournament and the run templates, but no code: the agent writes the code at run time, checks it against each card&#39;s self-check and keeps it in a <code>workbench/</code> folder for later runs.</p>
 <h2 id="requirements">Requirements</h2>
 <ul>
 <li><strong>Skills:</strong> <code>schism</code> and <code>alchemist</code> installed where the driving agent can load them. The WSP skill is optional; when present, Schism hands general weight reading and writing to it.</li>
@@ -46,8 +46,9 @@ The brief gets <code>deployment: present</code>. You confirm the brief after Pha
 <li><em>Unattended, overnight:</em> write the brief yourself (copy <code>schism/assets/run-brief.yaml</code>), set <code>deployment: unattended</code> and <code>approved: true</code>, then start the agent with &quot;Run the Schism brief at runs/<id>/brief.yaml.&quot;
 Without <code>approved: true</code>, Alchemist builds the tournament harness and stops after the floor. A live tournament spends tokens nobody approved.</li>
 <li><em>Closed model:</em> &quot;Use Schism on the semantic branch to make this model less sycophantic.&quot;</li>
+<li><em>Injecting a behaviour:</em> &quot;Use Schism to make Qwen3-4B-Instruct answer in plain, terse English by default, the way it does when I ask for it.&quot; The contrast pair puts the instructed behaviour on the GOOD side, so the run makes it the default (<a href="skill.html"><code>schism/SKILL.md</code></a>, Three operations).</li>
 </ul>
-<p><strong>First run:</strong> do a calibration run before anything else. Use a small open model (about 1–2B parameters) and the slop preset. This checks the workbench&#39;s implementations against their self-checks, and every later run on that machine reuses the checked implementations.</p>
+<p><strong>First run:</strong> before anything else, do a calibration run on a small open model (about 1–2B parameters) with the slop preset. It checks the workbench&#39;s implementations against their self-checks, and every later run on that machine reuses what it checked.</p>
 <h2 id="models-and-reasoning-effort">Models and reasoning effort</h2>
 <ul>
 <li><strong>Orchestrator, Cartographer, Smith, Arbiter, Goodhart tester:</strong> these need the strongest reasoning available. Use the strongest model your agent driver supports, with extended thinking enabled for these roles.</li>
