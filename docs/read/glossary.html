@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Glossary — Schism reading room</title>
+<meta name="description" content="Schism reading room: Glossary." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html">Schism</a></li><li><a href="skill.html">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html">Install and run</a></li><li><a href="glossary.html" aria-current="page">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main">
+<p class="crumb">Glossary</p>
+<h1>Glossary</h1>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>behaviour</td>
+<td data-claim="C-22">one observable trait of a model&#39;s responses, defined by a pair of sentences: what responses look like with it (bad) and without it (good)</td>
+</tr>
+<tr>
+<td>contrast pair</td>
+<td data-claim="C-51">the two prompt sets that define the behaviour; &quot;choosing the prompt sets is defining the behaviour&quot;</td>
+</tr>
+<tr>
+<td>residual stream</td>
+<td data-claim="C-59">the running vector each layer reads and adds to; components never talk directly, everything passes through it</td>
+</tr>
+<tr>
+<td>writer</td>
+<td data-claim="C-59">a matrix that puts something into the residual stream (attention output, MLP down-projection)</td>
+</tr>
+<tr>
+<td>decision token</td>
+<td data-claim="C-59">the last prompt token, where the model&#39;s state is about to become the first response token</td>
+</tr>
+<tr>
+<td>direction</td>
+<td data-claim="C-46">a unit vector summarising how the stream differs between bad and good prompts at the decision token; a contrast, not a concept</td>
+</tr>
+<tr>
+<td>directional ablation</td>
+<td data-claim="C-45">stopping the writers from adding a direction to the stream</td>
+</tr>
+<tr>
+<td>MPOA</td>
+<td data-claim="C-45">Magnitude-Preserving Orthogonal Ablation: directional ablation that keeps each writer row at its trained length</td>
+</tr>
+<tr>
+<td>ARA</td>
+<td data-claim="C-44">Arbitrary-Rank Ablation: each writer&#39;s edit fitted so bad outputs land among real good outputs while good outputs stay put</td>
+</tr>
+<tr>
+<td>LoRA adapter</td>
+<td data-claim="C-54">a small low-rank addition to a matrix; reversible, stored apart from the original</td>
+</tr>
+<tr>
+<td>prompt operator</td>
+<td data-claim="C-16 C-58">text placed as a system prompt, prefix or suffix: the edit on the semantic branch</td>
+</tr>
+<tr>
+<td>fit / probe / dev / vault</td>
+<td data-claim="C-08">the four disjoint prompt splits: fitting; budgeted exploration; testing; the sealed final score</td>
+</tr>
+<tr>
+<td>neutral prompts</td>
+<td data-claim="C-51">prompts unrelated to the behaviour: the preservation material</td>
+</tr>
+<tr>
+<td>floor</td>
+<td data-claim="C-26">the baseline result, done from the cards; candidate zero is its best trial</td>
+</tr>
+<tr>
+<td>candidate</td>
+<td data-claim="C-41">one proposed edit or operator, as a reproducible recipe</td>
+</tr>
+<tr>
+<td>bench</td>
+<td data-claim="C-41">the orchestrator&#39;s mechanical step that turns a candidate into a measurement bundle; it decides nothing</td>
+</tr>
+<tr>
+<td>tier</td>
+<td data-claim="C-28 C-29">a preservation threshold; the tournament runs once per tier, loosest first</td>
+</tr>
+<tr>
+<td>ratchet</td>
+<td data-claim="C-28 C-30">moving to the next, tighter tier after convergence</td>
+</tr>
+<tr>
+<td>barrier</td>
+<td data-claim="C-28">a proven failure of two constraints to hold together; it ends the ratchet</td>
+</tr>
+<tr>
+<td>front</td>
+<td data-claim="C-31">the non-dominated candidates on behaviour and preservation</td>
+</tr>
+<tr>
+<td>tournament</td>
+<td data-claim="C-13">the Alchemist loop: compiler → isolated testers → judge with history</td>
+</tr>
+<tr>
+<td>feasibility gate</td>
+<td data-claim="C-25">the Map&#39;s verdict on whether there is anything to switch off</td>
+</tr>
+<tr>
+<td>first-token KL</td>
+<td data-claim="C-48">how much the edit moves the model&#39;s first answer token on neutral prompts</td>
+</tr>
+<tr>
+<td>drift / noise floor</td>
+<td data-claim="C-58">on the semantic branch, how far neutral responses move, against how far two unedited samples differ</td>
+</tr>
+<tr>
+<td>Goodhart</td>
+<td data-claim="C-50">satisfying the measurement instead of the target</td>
+</tr>
+<tr>
+<td>winner&#39;s curse</td>
+<td data-claim="C-34">the bias that makes the chosen candidate&#39;s own score look better than it is</td>
+</tr>
+<tr>
+<td>ledger</td>
+<td data-claim="C-12">the run&#39;s append-only memory</td>
+</tr>
+<tr>
+<td>workbench</td>
+<td data-claim="C-11 C-55">the agent&#39;s checked implementations, kept across runs</td>
+</tr>
+</tbody></table>
+
+<nav class="pn" aria-label="Previous and next"><a href="install.html">← Install and run</a><span></span></nav>
+<a class="back" href="../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

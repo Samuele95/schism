@@ -1,0 +1,65 @@
+# Alchemist run configuration for one Schism tier. Copy to runs/<run-id>/tiers/tier-<k>/run-config.yaml.
+# Schism fills it; Alchemist runs it. Roles were designed with Prometheus (schism/roles/);
+# Alchemist uses them as-is, filling only their <slots> from the brief.
+
+target:
+  description: >
+    A <weight edit | prompt operator> for <model> that makes bad-condition responses behave like GOOD
+    ("<good sentence>") instead of BAD ("<bad sentence>"), at a dev behaviour rate ≤ <target>,
+    with neutral-prompt preservation within <tier threshold>, capability drop ≤ <allowed drop>,
+    and no gaming of the measurements.
+  mode: forge                  # dry-run when brief.approved is false and deployment is unattended
+
+output_space:
+  form: >
+    One edit spec (weights branch) or operator spec (semantic branch) in the schema of
+    schism/references/coordination.md. The candidate is a recipe; Schism's bench step turns it
+    into a measurement bundle before the testers see anything.
+  components:
+    - x1: behaviour.jsonl (the keyword meter stays out: comparing it with the judge is T4's job)
+    - x2: preservation.jsonl + preservation meter
+    - x3: capability.json
+    - x4: spec + whole bundle + behaviour sentence pair + behaviour rubric + goodhart_list + synonym_gap + length_drop
+
+testers:
+  - id: T1
+    constraint: behaviour removed
+    projection: {x1}
+    criterion: rate of BAD (UNSURE = 0.5) ≤ <target>
+    prompt: schism/roles/tester-behaviour.md
+  - id: T2
+    constraint: everything else preserved
+    projection: {x2}
+    criterion: meter mean ≤ <tier threshold> AND CHANGED pairs ≤ <max_changed>
+    prompt: schism/roles/tester-preservation.md
+  - id: T3
+    constraint: capability kept
+    projection: {x3}
+    criterion: accuracy drop ≤ <allowed drop> and no concentrated broken-item pattern
+    prompt: schism/roles/tester-capability.md
+  - id: T4
+    constraint: removed, not gamed
+    projection: full
+    criterion: no gaming pattern found with evidence
+    prompt: schism/roles/tester-goodhart.md
+
+halt:
+  predicate: all_pass
+  relaxation:
+    enabled: false             # Schism never relaxes mid-run; a barrier ends the tier ratchet instead
+    rule: null
+
+budget:
+  N: 6
+  warm_start: >
+    Iteration 0 is <candidate zero | the previous tier's converged candidate>, benched and tested
+    before the compiler runs. Techniques carried from earlier tiers: <list from the previous H ledger>.
+
+roles:
+  compiler: schism/roles/smith.md            # semantic branch: schism/roles/operator-compiler.md
+  testers: [T1, T2, T3, T4]                  # prompts above
+  judge: schism/roles/arbiter.md
+
+schism:
+  bench: required between compiler and testers (schism/references/coordination.md, Bench)
+  h_ledger_columns: [iter, T1, T2, T3, T4, fix_applied]

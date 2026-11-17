@@ -1,0 +1,155 @@
+/* Two layouts from one markup.
+   Default (no JS, reduced motion, no WebGL): the scenes in order, each a still with its copy.
+   html.film: the scroll film — scenes are fixed overlays whose lines the timeline reveals. */
+
+:root {
+  --ground: #050506;
+  --bone: #e8e2d4;
+  --bone-dim: rgba(232, 226, 212, 0.58);
+  --bone-faint: rgba(232, 226, 212, 0.28);
+  --phosphor: #59ff9c;
+  --rubric: #e0402f;
+  --serif: "EB Garamond", "Iowan Old Style", Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--ground); color: var(--bone); }
+body { font-family: var(--serif); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+em { font-style: italic; color: var(--bone-dim); }
+
+.skip {
+  position: absolute; left: 1rem; top: -4rem; z-index: 20;
+  font: 0.8rem/1 var(--mono); padding: 0.6rem 0.8rem;
+  background: var(--ground); border: 1px solid var(--bone-faint);
+}
+.skip:focus { top: calc(1rem + var(--sat)); }
+
+/* ------------------------------------------------------------------ shared type */
+.title {
+  font-weight: 400; line-height: 1; color: var(--bone);
+  font-size: clamp(3.2rem, 11vw, 9.5rem);
+  letter-spacing: 0.32em; margin-right: -0.32em;
+  text-shadow: 0 0 40px rgba(232, 226, 212, 0.18);
+}
+.title.small { font-size: clamp(1.6rem, 4.4vw, 3rem); }
+.sub { margin-top: 1.4rem; font-style: italic; color: var(--bone-dim); font-size: clamp(1rem, 2.2vw, 1.45rem); letter-spacing: 0.06em; }
+.line { font-size: clamp(1.3rem, 3vw, 2.25rem); line-height: 1.3; color: var(--bone); }
+.formula { margin-top: 0.8rem; font: clamp(0.8rem, 1.5vw, 1rem)/1.4 var(--mono); letter-spacing: 0.06em; color: var(--rubric); }
+.rubric {
+  font-weight: 400; font-variant: small-caps; letter-spacing: 0.2em;
+  font-size: clamp(0.95rem, 1.6vw, 1.15rem); color: var(--rubric);
+}
+.lore { font-style: italic; color: var(--bone-dim); font-size: clamp(0.85rem, 1.3vw, 1rem); line-height: 1.45; }
+.readout {
+  font: clamp(0.64rem, 1.1vw, 0.8rem)/1.9 var(--mono);
+  color: var(--phosphor); text-shadow: 0 0 8px rgba(89, 255, 156, 0.5);
+  white-space: pre; overflow: hidden;
+}
+.read { font: 0.72rem/1 var(--mono); letter-spacing: 0.08em; color: var(--bone-dim); text-decoration: none; }
+.read:hover, .read:focus-visible, .read a:hover, .read a:focus-visible { color: var(--bone); text-decoration: underline; }
+.read a { color: inherit; text-decoration: none; }
+.end-line { margin-top: 1.4rem; font-size: clamp(1.2rem, 2.6vw, 1.9rem); }
+.cta {
+  display: inline-block; margin-top: 2.2rem; padding: 0.85rem 1.4rem;
+  font: 0.8rem/1 var(--mono); letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none;
+  border: 1px solid var(--bone-faint); color: var(--bone);
+}
+.cta:hover, .cta:focus-visible { border-color: var(--bone); }
+.end-small { margin-top: 1.4rem; font: 0.72rem/1.5 var(--mono); color: var(--bone-dim); letter-spacing: 0.06em; }
+
+/* ------------------------------------------------------------------ default: the still sequence */
+#gl, #film, #labels, .hint, .sound, .phases, #debug { display: none; }
+#scenes { max-width: 72rem; margin: 0 auto; padding: calc(4rem + var(--sat)) 1.5rem calc(5rem + var(--sab)); }
+.scene { padding: 3.5rem 0; border-top: 1px solid rgba(232, 226, 212, 0.08); display: grid; gap: 1.2rem; }
+.scene:first-child { border-top: none; text-align: center; }
+.still { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; background: #000; display: block; }
+.scene .title-block { margin-top: 1rem; order: -1; }
+.scene .line em, .scene .line p { display: block; }
+.scene .line.left p + p { margin-top: 0.4rem; }
+.scene .readout { white-space: pre-wrap; }
+.scene .ending { text-align: center; padding: 2rem 0; }
+.scene .read { justify-self: start; }
+
+/* ------------------------------------------------------------------ html.film: the scroll film */
+html.film #gl { display: block; position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100lvh; }
+html.film #film { display: block; height: 2030vh; position: relative; }
+html.film.lenis, html.film.lenis body { height: auto; }
+html.film .lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.film #scenes { max-width: none; margin: 0; padding: 0; }
+html.film .scene { position: fixed; inset: 0; padding: 0; border: 0; display: block; pointer-events: none; z-index: 2; }
+html.film .still { display: none; }
+html.film .scene > *:not(.still) { position: absolute; opacity: 0; visibility: hidden; }
+
+html.film .title-block { left: 50%; top: 50%; transform: translate(-50%, -50%); text-align: center; }
+html.film .line {
+  left: 50%; bottom: calc(14vh + var(--sab)); transform: translateX(-50%);
+  width: min(92vw, 46rem); text-align: center;
+  text-shadow: 0 0 26px rgba(5, 5, 6, 0.95), 0 0 3px rgba(5, 5, 6, 1);
+}
+html.film .line em { display: inline; }
+/* a soft dark scrim, so copy stays legible over the brightest parts of the space */
+html.film .line::before {
+  content: ""; position: absolute; inset: -1.6rem -2.4rem; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+html.film .line.left {
+  left: calc(7vw + var(--sal)); transform: none; bottom: calc(13vh + var(--sab));
+  width: min(86vw, 31rem); text-align: left;
+}
+html.film .rubric { left: calc(7vw + var(--sal)); top: calc(10vh + var(--sat)); }
+html.film .readout { left: calc(7vw + var(--sal)); top: calc(15.5vh + var(--sat)); }
+html.film .readout span { display: inline-block; clip-path: inset(0 100% 0 0); }
+html.film .lore { right: calc(5vw + var(--sar)); top: calc(15.5vh + var(--sat)); width: min(80vw, 21rem); text-align: right; }
+html.film .read { left: calc(7vw + var(--sal)); bottom: calc(5vh + var(--sab)); pointer-events: auto; }
+html.film .ending { left: 50%; top: 66%; transform: translate(-50%, -50%); text-align: center; width: min(92vw, 40rem); pointer-events: auto; }
+
+html.film #labels { display: block; position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+.mu, .tlabel {
+  position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap;
+  font: 0.7rem/1 var(--mono); letter-spacing: 0.08em; color: var(--bone-dim);
+}
+.mu.bad { color: var(--rubric); }
+.tlabel { color: var(--phosphor); }
+.tlabel.judge { color: var(--bone-dim); }
+
+html.film .phases {
+  display: flex; gap: 0.9rem; position: fixed; z-index: 3;
+  right: calc(5vw + var(--sar)); top: calc(10vh + var(--sat));
+  font: 0.95rem/1 var(--serif); letter-spacing: 0.1em; color: var(--bone-faint);
+  opacity: 0;
+}
+.phases span { transition: color 0.4s; }
+.phases span.on { color: var(--rubric); }
+
+html.film .hint {
+  display: block; position: fixed; z-index: 3; left: 50%; bottom: calc(4vh + var(--sab)); transform: translateX(-50%);
+  font: 0.7rem/1 var(--mono); letter-spacing: 0.4em; text-transform: uppercase; color: var(--bone-dim);
+}
+html.film .sound {
+  display: block; position: fixed; z-index: 4; right: calc(5vw + var(--sar)); bottom: calc(4.4vh + var(--sab));
+  font: 0.68rem/1 var(--mono); letter-spacing: 0.12em; color: var(--bone-dim);
+  background: none; border: 1px solid var(--bone-faint); padding: 0.5rem 0.7rem; cursor: pointer;
+}
+html.film .sound[aria-pressed="true"] { color: var(--bone); border-color: var(--bone-dim); }
+
+html.film #debug {
+  display: block; position: fixed; right: 10px; top: 10px; z-index: 9;
+  font: 11px/1.5 var(--mono); color: var(--phosphor); background: rgba(0, 0, 0, 0.65); padding: 8px 10px; white-space: pre;
+}
+html.film #debug[hidden] { display: none; }
+
+@media (max-width: 640px) {
+  html.film .rubric { top: calc(8vh + var(--sat)); }
+  html.film .readout { top: calc(12vh + var(--sat)); left: calc(6vw + var(--sal)); }
+  html.film .phases { top: calc(8vh + var(--sat)); gap: 0.6rem; font-size: 0.8rem; }
+  html.film .line, html.film .line.left { left: calc(6vw + var(--sal)); transform: none; width: 88vw; text-align: left; bottom: calc(15vh + var(--sab)); }
+  html.film .lore { left: calc(6vw + var(--sal)); right: auto; top: auto; text-align: left; bottom: calc(9.5vh + var(--sab)); }
+  html.film .read { bottom: calc(4.5vh + var(--sab)); }
+  html.film .sound { bottom: calc(3.6vh + var(--sab)); }
+}

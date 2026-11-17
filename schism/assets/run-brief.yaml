@@ -1,0 +1,72 @@
+# Schism run brief — the run's contract. Fill in Phase 1; copy into runs/<run-id>/brief.yaml.
+# Every field without a value takes the default written next to it; the ledger records which were defaulted.
+
+run_id: <model-slug>-<behaviour>-<yyyymmdd-hhmm>
+deployment: present            # present | unattended — decides whether you ask the user at material forks
+approved: false                # true = the user approves a live Alchemist tournament (forge) in advance; needed when unattended
+
+behaviour:
+  bad: <one sentence: what responses look like WITH the behaviour>
+  good: <one sentence: what they look like WITHOUT it>
+  question_answered: <instructed | uninstructed — which behaviour dev and vault measure, and why>
+
+branch: weights                # weights | semantic
+model:
+  id: <hf id, local path, or model name>
+  revision: <commit or version string>
+  dtype: auto
+  quantization: none           # none | bnb_4bit
+  sampling_command: <semantic branch only: the exact headless invocation>
+  embedder: <semantic branch only: model id, chosen by the agent>
+
+contrast:
+  pattern: datasets            # datasets | instructions
+  good: {dataset: <id>, revision: <commit>, column: text, prefix: null, system_prompt: "You are a helpful assistant."}
+  bad:  {dataset: <id>, revision: <commit>, column: text, prefix: null, system_prompt: "You are a helpful assistant."}
+  neutral: {dataset: <id>, revision: <commit>, column: text}
+  response_prefix: <detected in Phase 1, escaped>
+
+splits:                        # disjoint, per condition
+  fit: 400
+  probe: 100
+  probe_neutral: 50            # neutral prompts for probe-side KL / drift (compiler and Cartographer)
+  dev: 100                     # plus 100 neutral
+  vault: 100                   # plus 100 neutral; sealed
+  vault_sha256: <written when sealed>
+
+meters:                        # floor objectives and head-to-head currency
+  behaviour: keyword_rate      # keyword_rate | classifier | response_length
+  keyword_markers: default_refusal   # or an explicit list
+  max_response_length: 100
+  preservation: first_token_kl # first_token_kl | embedding_drift (semantic) | benchmark
+  capability: {task: gsm8k, metric: exact_match, slice: 100, allowed_drop: 0.03, max_length: 512}   # generative, works on both branches; max_length is per item (chain-of-thought needs more than max_response_length)
+                               # log-likelihood tasks (piqa acc_norm) only on the weights branch, and give T3 no outputs to diagnose
+
+judges:                        # rubrics returned by Prometheus in Phase 1
+  behaviour_rubric: <path>
+  preservation_rubric: <path>
+  max_changed: 3               # preservation tester: CHANGED pairs allowed out of 100
+  tester_model: <model id>     # prefer a different model from the compiler
+  goodhart_list: [<way 1>, <way 2>, <way 3>]
+  synonym_gap: 0.15            # T4: keyword drop may exceed judged drop by at most this
+  length_drop: 0.30            # T4: max fall in mean behaviour-response length
+
+floor:
+  modifier: ara                # ara | abliteration
+  trials: 100
+  startup_trials: 30
+  seed: 42
+
+tournament:
+  behaviour_target: from_floor # from_floor = T1's judged rate on candidate zero's dev bundle, or a number
+  tiers: [0.40, 0.20, 0.10]    # first-token KL; semantic default [2.0, 1.5, 1.2] × noise floor
+  N: 6                         # Alchemist iterations per tier
+  probe_calls_per_iteration: 10
+  probe_calls_total: 150
+  mapping_probe_calls: 30
+  samples_total: <semantic branch only>
+  operator_max_tokens: 400     # semantic branch: an operator is paid on every call
+  allowed_fixes: [row_norm_baked, ridge, sequential_recapture, sparse, side_path]
+
+export:
+  form: merged                 # merged | adapter

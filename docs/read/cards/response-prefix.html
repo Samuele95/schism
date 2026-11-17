@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Response prefix — Schism reading room</title>
+<meta name="description" content="Schism reading room: Response prefix." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html" aria-current="page">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/response-prefix.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/response-prefix.md"><code>schism/cards/response-prefix.md</code></a>, as written.</p>
+<h1 id="card-response-prefix-putting-the-decision-token-where-answers-diverge">Card — Response prefix: putting the decision token where answers diverge</h1>
+<p><strong>What it buys.</strong> First-token measurements (KL, direction reads) that mean something on reasoning models and on models whose answers share an opener.</p>
+<h2 id="why">Why</h2>
+<p>If every answer starts with <code>&lt;think&gt;</code> or a fixed phrase, the first-token distribution is nearly identical for every prompt: KL shows no damage when there is a lot, and a 100-token behaviour budget is spent thinking before the model says yes or no. Append a prefix to every prompt so generation begins where answers differ.</p>
+<h2 id="procedure-in-order">Procedure (in order)</h2>
+<p>Known chain-of-thought pairs: <code>&lt;think&gt;</code>/<code>&lt;/think&gt;</code>; <code>&lt;|channel|&gt;analysis&lt;|message|&gt;</code> / <code>&lt;|end|&gt;&lt;|start|&gt;assistant&lt;|channel|&gt;final&lt;|message|&gt;</code>; <code>&lt;thought&gt;</code>/<code>&lt;/thought&gt;</code>; <code>[THINK]</code>/<code>[/THINK]</code>. Add others you find in the template.</p>
+<ol>
+<li>Render a dummy chat with the template (<code>add_generation_prompt=True</code>). If it already ends with a <strong>closed</strong> block (open tag then close tag), the prefix is empty.</li>
+<li>If it ends with only the <strong>opening</strong> tag, the prefix is the closing tag; then do the re-check of step 4 (generate once more with it appended, to pick up a newline the model always emits after the block).</li>
+<li>Otherwise generate answers (greedy, short) to 200 test prompts (100 per condition, from the probe split) and take their <strong>longest common string prefix</strong>, with trailing spaces stripped (spaces only, not newlines; use <code>rstrip(&quot; &quot;)</code>) so a lone space token is never kept, while a newline the re-check depends on survives.</li>
+<li>If that prefix starts with an opening CoT tag, replace it with the closed block (open + close). Then repeat step 3 once with this prefix appended, to pick up a trailing newline the model always emits after the block.</li>
+<li>Append the final prefix to every prompt for every generation and first-token measurement in the run.</li>
+</ol>
+<h2 id="traps">Traps</h2>
+<ul>
+<li>Chat templates may insert today&#39;s date (gpt-oss). Pin <code>strftime_now</code> to a fixed date (e.g. 2026-01-01) so prompts are identical across days.</li>
+<li>A prefix detected on one system prompt may change under another; detect it with the run&#39;s actual system prompts.</li>
+<li>On the semantic branch there is no prefix: you do not control the template. Measure on full responses instead (<a href="../cards/semantic-branch.html"><code>cards/semantic-branch.md</code></a>).</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<p>After appending the prefix, generate one token for 20 neutral and 20 bad-condition probe prompts. The two first-token distributions should differ visibly (total variation distance above ~0.2). If they are near-identical, the prefix is wrong or missing.</p>
+<h2 id="ledger">Ledger</h2>
+<p>The detected prefix (exact string, escaped), which step produced it, the self-check&#39;s total variation.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/stream-and-capture.html">← The residual stream, its writers, and capture</a><a href="../cards/contrast-design.html">Contrast design, presets and splits →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

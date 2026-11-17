@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Directional ablation and MPOA — Schism reading room</title>
+<meta name="description" content="Schism reading room: Directional ablation and MPOA." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html" aria-current="page">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/directional-ablation.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/directional-ablation.md"><code>schism/cards/directional-ablation.md</code></a>, as written.</p>
+<h1 id="card-directional-ablation-as-a-lora-edit-and-mpoa">Card — Directional ablation as a LoRA edit, and MPOA</h1>
+<p><strong>What it buys.</strong> The classic modifier: stop the writers from adding a direction v to the stream, with a per-layer strength schedule, optionally keeping each writer row at its trained length (Magnitude-Preserving Orthogonal Ablation, MPOA).</p>
+<h2 id="the-edit">The edit</h2>
+<p>Removing v from what a writer emits, for every input z, moves the projector inside the matrix:</p>
+<pre><code>W′ = W − λ · v (vᵀW)              vᵀW′z = (1 − λ) · vᵀWz
+</code></pre>
+<p>λ = 0: nothing. λ = 1: the writer can no longer write along v. λ &gt; 1: it writes <em>against</em> v, pushing back the v that the embedding and earlier, unedited writers already put on the stream, which an edit at this layer cannot erase. Too far, and the stream ends negative along v, a state the model never saw in training; the preservation meter catches that.</p>
+<p>Stored as a rank-1 LoRA (<a href="../cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a>, lora_alpha = r so the scale is 1):</p>
+<pre><code>B = −λ · v          (d × 1)
+A = vᵀW             (1 × d_in)        in code: A = v @ W
+</code></pre>
+<p>Under 4-bit quantization compute A from the dequantized weight (float32). A merged full-precision export then carries a small quantization-error term along v; record that quantization was on.</p>
+<h2 id="strength-per-layer-the-weight-kernel">Strength per layer: the weight kernel</h2>
+<p>One kernel per component role (attn.o_proj, mlp.down_proj), four knobs each. With δ = |ℓ − max_weight_position|:</p>
+<pre><code>λ(ℓ) = max_weight + (δ / min_weight_distance)·(min_weight − max_weight)   if δ ≤ min_weight_distance
+λ(ℓ) = 0 (layer skipped)                                                  otherwise
+</code></pre>
+<p>Search ranges (<a href="../cards/tpe.html"><code>cards/tpe.md</code></a> explains why they are shaped this way):</p>
+<table>
+<thead>
+<tr>
+<th>Knob</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>direction_scope</code></td>
+<td>global, per layer</td>
+</tr>
+<tr>
+<td><code>direction_index</code></td>
+<td>[0.4, 0.9]·(L−1), sampled even when per layer</td>
+</tr>
+<tr>
+<td><code>max_weight</code></td>
+<td>attn [0.8, 1.5]; mlp [−0.25, 1.5] then clamped at 0 (0.25/1.75 ≈ 14% of prior mass = MLP edit off; MLP edits often cost more capability than attention edits)</td>
+</tr>
+<tr>
+<td><code>max_weight_position</code></td>
+<td>[0.6, 1.0]·(L−1)</td>
+</tr>
+<tr>
+<td><code>min_weight</code></td>
+<td>[0, 1] as a fraction of max_weight</td>
+</tr>
+<tr>
+<td><code>min_weight_distance</code></td>
+<td>[1, max(0.6·(L−1), 1)]</td>
+</tr>
+</tbody></table>
+<p>The kernel peaks later than the band where the global direction is read: the direction is clearest mid-stack, the edit is centred on the later layers that act on it.</p>
+<h2 id="row-normalization-mpoa">Row normalization (MPOA)</h2>
+<p>A writer&#39;s row i drives stream coordinate i; its norm nᵢ is that coordinate&#39;s trained scale. Write Ŵ = diag(n)⁻¹ W.</p>
+<ul>
+<li><strong>none</strong> — the rank-1 edit above.</li>
+<li><strong>pre</strong> — compute on unit rows, scale back: A = vᵀŴ, B = −λ · (n ⊙ v). Still rank 1; long rows no longer dominate A.</li>
+<li><strong>full</strong> (default) — edit the normalized matrix, renormalize every row to unit length, restore original norms, subtract:</li>
+</ul>
+<pre><code>Ŵ′ = Ŵ − λ v vᵀŴ
+W_new = diag(n) · diag(1/‖Ŵ′ᵢ‖) · Ŵ′
+ΔW = W_new − W
+</code></pre>
+<p>  The per-row rescale makes ΔW non-linear in λ and generally not rank 1. Compress it: <code>U, S, V = torch.svd_lowrank(ΔW, q=2r+4, niter=6)</code>, keep the top r = 3, split √S evenly: B = U[:, :r]·diag(√s), A = diag(√s)·V[:, :r]ᵀ. <strong>Reseed the RNG immediately before every svd_lowrank call</strong>, so re-applying a candidate gives the same adapter regardless of what ran before. Three directions suffice because every rescale factor is close to 1 when v is spread over thousands of coordinates: ΔW is the rank-1 projection plus a small row reweighting.</p>
+<p>MPOA trades exact removal for preserved magnitudes: unequal row factors leak a little of v back at λ = 1. Whether that trade is right is unsettled; the default keeps it on. Orthogonalized direction + full normalization = MPOA.</p>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li><strong>none, λ = 1:</strong> for random z, vᵀ(W + BA)z ≈ 0 (relative to vᵀWz, &lt; 1e-5 in float32).</li>
+<li><strong>none, any λ:</strong> vᵀ(W + BA)z = (1−λ)vᵀWz; and for u ⟂ v, uᵀ(W + BA)z = uᵀWz.</li>
+<li><strong>full:</strong> every row norm of W + BA (with the full ΔW, before compression) equals the original within 1e-5; after rank-3 compression, report the energy captured (Σ top-3 σ² / Σ σ²; expect &gt; 0.99) and the residual row-norm error.</li>
+<li>Determinism: applying the same candidate twice gives byte-identical A and B.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/directions.html">← Directions</a><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation →</a></nav>
+<a class="back" href="../../index.html#s10">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

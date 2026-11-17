@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The residual stream, its writers, and capture — Schism reading room</title>
+<meta name="description" content="Schism reading room: The residual stream, its writers, and capture." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html" aria-current="page">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/stream-and-capture.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/stream-and-capture.md"><code>schism/cards/stream-and-capture.md</code></a>, as written.</p>
+<h1 id="card-the-residual-stream-its-writers-and-capture">Card — The residual stream, its writers, and capture</h1>
+<p><strong>What it buys.</strong> The physical picture every weights-branch technique rests on: where &quot;what the model is about to say&quot; lives, which matrices can change it, and how to read it.</p>
+<h2 id="the-model-as-a-bus">The model as a bus</h2>
+<p>In a pre-norm decoder, each layer ℓ reads a normalized copy of the running vector and adds its result back:</p>
+<pre><code>h_ℓ   = x_ℓ + W_O^(ℓ) · attn(Norm x_ℓ)
+x_ℓ+1 = h_ℓ + W_down^(ℓ) · mlp(Norm h_ℓ)
+x_L   = x_0 + Σ_ℓ ( W_O^(ℓ) a_ℓ + W_down^(ℓ) m_ℓ )
+</code></pre>
+<p>Components never talk directly; everything passes through the stream, and only the <strong>writers</strong> put anything into it. Editing writers controls everything downstream without touching attention patterns or non-linearities.</p>
+<p><strong>Writers, by role</strong> (collect them per layer; names vary by architecture):</p>
+<ul>
+<li><code>attn.o_proj</code> role: <code>self_attn.o_proj</code>; <code>linear_attn.out_proj</code> (Qwen3.5 GatedDeltaNet); <code>o_b_proj</code> (DeepSeek V4); convolution <code>out_proj</code> (LFM).</li>
+<li><code>mlp.down_proj</code> role: <code>mlp.down_proj</code>; every MoE expert&#39;s <code>down_proj</code> / <code>w2</code> / <code>output_linear</code>; shared experts.</li>
+</ul>
+<p>To discover them on an unknown architecture: list every <code>nn.Linear</code> (or quantized linear) whose <code>out_features == hidden_size</code> inside each decoder layer, then confirm by checking that its output is added to the residual in the layer&#39;s <code>forward</code>. Read the forward source rather than guessing from names.</p>
+<p>PyTorch stores <code>Linear.weight</code> as <code>(out, in)</code>. For a writer, rows index the stream: a stream direction v acts on rows, so v-related edits are <code>v @ W</code> (that is vᵀW) and outer products <code>v ⊗ (vᵀW)</code>.</p>
+<h2 id="the-decision-token">The decision token</h2>
+<p>Read the stream at the <strong>last prompt token</strong>, after the chat template and any response prefix (<a href="../cards/response-prefix.html"><code>cards/response-prefix.md</code></a>): in a causal model it is the only position that has attended to the whole prompt, and its state is about to become the first response token.</p>
+<ul>
+<li><strong>Pad left.</strong> Set <code>tokenizer.padding_side = &quot;left&quot;</code> before batching, so index −1 is a real token for every prompt. Right padding silently reads pad positions.</li>
+<li><strong>Index shift.</strong> With <code>output_hidden_states=True</code>, Hugging Face returns L+1 tensors: index 0 is the embedding output, index i is the stream <em>after layer i−1</em>. The direction for the writers of layer ℓ is computed from index ℓ+1.</li>
+<li><strong>Generate one token</strong> (<code>max_new_tokens=1</code>, <code>return_dict_in_generate=True</code>, <code>output_hidden_states=True</code>), and keep <code>hidden_states[0]</code> (the prompt pass); take <code>[:, -1, :]</code> per layer, cast to float32. A plain forward pass is equivalent only if you build <code>position_ids</code> from the attention mask for left-padded batches; without that its numbers differ.</li>
+<li><strong>Several residual streams</strong> (Hyper-Connections, e.g. DeepSeek V4, GLM 5.3): average the streams into one before analysis. A pragmatic reduction, not exact; record that it was applied.</li>
+</ul>
+<h2 id="capturing-writer-inputs-and-outputs-for-ara-and-wsp">Capturing writer inputs and outputs (for ARA and WSP)</h2>
+<p>Register a forward hook on each writer module; in the hook keep <code>inputs[0][:, -1, :]</code> and <code>output[:, -1, :]</code> for the current batch, detached and moved to CPU. One generated token per prompt is enough. For MoE experts, an expert only sees the tokens routed to it, so its capture is sparse: record which prompts reached it, and expect fewer rows than prompts.</p>
+<p>Accumulate means batch by batch in float64 on CPU when you only need means; keep full per-prompt tensors only when the technique needs them (ARA, kNN, geometry).</p>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Pad a batch of two prompts of different lengths; confirm the token at position −1 of each row is the real last prompt token, not a pad id.</li>
+<li>For one prompt and a middle layer ℓ, confirm <code>hidden_states[ℓ+1] − hidden_states[ℓ]</code> equals the sum of the two writer outputs you hooked at layer ℓ (up to dtype tolerance, ~1e-2 relative in bf16). This proves you found the right writers and the right index. Two known exceptions: the last entry of <code>hidden_states</code> already has the final norm applied (skip the last layer), and architectures with a norm <em>after</em> the writer (Gemma&#39;s post-attention and post-feedforward norms) add the normed writer output, so compare against the hooked norm outputs instead and note that any writer edit is rescaled by that norm.</li>
+<li>Confirm the number of collected writers per layer matches the architecture (2 for dense layers; 1 + n_experts (+ shared) for MoE MLPs).</li>
+</ol>
+<h2 id="ledger">Ledger</h2>
+<p>Writers found per layer, padding side, dtype, whether stream averaging was applied, self-check results.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="../coordination.html">← Coordination</a><a href="../cards/response-prefix.html">Response prefix →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

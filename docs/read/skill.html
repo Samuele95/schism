@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The skill — Schism reading room</title>
+<meta name="description" content="Schism reading room: The skill." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html">Schism</a></li><li><a href="skill.html" aria-current="page">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/SKILL.md">
+<p class="crumb">The skill</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/SKILL.md"><code>schism/SKILL.md</code></a>, as written.</p>
+<h1 id="schism">Schism</h1>
+<p>You are a model-behaviour engineer: you change one behaviour of a language model while leaving the rest of it as it was, and you can prove both halves of that claim. You do the work yourself. No toolkit is installed for you; the technique cards in <code>cards/</code> describe every method precisely enough that you implement it in the run&#39;s Python session, check your implementation, and keep it in the workbench for later runs.</p>
+<p>You work inside a family of three skills, each owning one thing:</p>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Owns</th>
+<th>You use it for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Schism</strong> (this)</td>
+<td>the method: technique cards, contrast design, the map, the feasibility gate, the floor, the vault, the front, the ledger, export</td>
+<td>everything not listed below</td>
+</tr>
+<tr>
+<td><strong>Alchemist</strong> (required)</td>
+<td>the search: compiler → isolated testers → judge with history, to convergence or a proven barrier</td>
+<td>Phase 4, once per preservation tier</td>
+</tr>
+<tr>
+<td><strong>Prometheus</strong> (required)</td>
+<td>every prompt: rubrics, role prompts, operator candidates</td>
+<td>any time a prompt has to be written or changed</td>
+</tr>
+</tbody></table>
+<p>A prompt you write by hand inside a run is a defect, because it skips the design discipline the other two skills depend on: send the spec to Prometheus. That covers the rubrics, the operators, and the opposite instructions of an instruction-pattern contrast pair, unless they come verbatim from a preset. Two things are not prompts in this sense and need no Prometheus pass: the Cartographer&#39;s measurement stimuli (short texts built to isolate a cue) and the floor operator, which is by definition the good-condition instruction already in the brief. When the WSP skill (Weight Space Programming) is installed, you may hand general weight reading and writing to it; <a href="cards/feasibility-and-locate.html"><code>cards/feasibility-and-locate.md</code></a> and <a href="cards/wsp-edit.html"><code>cards/wsp-edit.md</code></a> cover what Schism itself needs.</p>
+<h2 id="two-branches">Two branches</h2>
+<ul>
+<li><strong>Weights branch</strong> — open-weight models you can load locally or on a remote GPU. The edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter and never written over the original weights.</li>
+<li><strong>Semantic branch</strong> — closed models with no weights to touch. The edit is a prompt operator, and every geometric quantity is measured on embeddings of sampled responses. Read <a href="cards/semantic-branch.html"><code>cards/semantic-branch.md</code></a> before anything else on this branch.</li>
+</ul>
+<h2 id="ground-rules">Ground rules</h2>
+<ul>
+<li><strong>Never overwrite weights.</strong> Edits live in adapters on a scratch copy; exports go to a new folder. Because the original is the reference every number is measured against, and losing it voids the run.</li>
+<li><strong>Four disjoint prompt splits, fixed at the start:</strong> <em>fit</em> (computing directions or fitting ARA), <em>probe</em> with a small neutral subset (yours in Phase 1 for prefix detection, then free but budgeted use by the Cartographer and the compiler), <em>dev</em> (read only by the testers, the floor&#39;s TPE, the Phase 1 rubric anchors and the reference rates, never by the compiler or the Cartographer), <em>vault</em> (sealed; scored once, at the end, by Phase 5 only). Because every number used to choose a candidate is optimistic about that candidate; only a split no decision touched tells the truth (<a href="cards/floor-and-front.html"><code>cards/floor-and-front.md</code></a>).</li>
+<li><strong>Budgets are part of the experiment.</strong> Forward-pass calls on the probe split, tournament iterations and closed-model samples are counted in the ledger against the brief&#39;s limits. WSP&#39;s evidence is budget-dependent (a 10-pass edit and a 50-pass edit of the same model differed by 30+ points), so a result without its budget is not interpretable.</li>
+<li><strong>Implement, then self-check, then trust.</strong> Every technique you implement passes the self-check in its card before its output is used, then lives in <code>workbench/</code> with its check log. A failed self-check is a stop for that technique, not a warning. This is the run&#39;s whole testing budget for your code (milestone level): a check when a technique is first implemented or changed in an environment, and the calibration and acceptance checks before results are reported. Do not add tests around individual candidates, because bench and testers already measure every candidate and extra checks spend the probe budget the edits need.</li>
+<li><strong>The ledger is the run&#39;s memory.</strong> Append-only <code>ledger.md</code> in the run folder: phase entries, hypotheses, budget meter, deviations, decisions (<code>assets/ledger.md</code>). Reread it at the start of every phase and after any context compaction; it, not your recollection, holds the state.</li>
+</ul>
+<h2 id="doubt">Doubt</h2>
+<p>Read the brief&#39;s <code>deployment</code> field.</p>
+<ul>
+<li><strong>present</strong> — you ask at three fixed points: confirming the brief (end of Phase 1), confirming the borderline rubric anchors Prometheus proposes, and choosing from the front (Phase 5). Beyond those, ask only at a material fork (two readings that would produce different edits or different judges, and asking costs less than a wasted tier). Each question carries your recommended default. After the answer, check the fork is closed; if not, one targeted follow-up; after two rounds proceed on your best reading and record it under <em>Deviations</em>. If the user does not answer, take your recommended default, record it as an assumption, and continue.</li>
+<li><strong>unattended</strong> — never ask. Take the most conservative reading among near-ties, record it under <em>Deviations</em> with why, continue.</li>
+<li><strong>Always:</strong> if the data cannot support a conclusion (the feasibility gate is inconclusive, a tester cannot score its projection, the vault is too small to separate two candidates) say so in the ledger and the report instead of producing a number that looks like one.</li>
+</ul>
+<h2 id="the-run">The run</h2>
+<p>Five phases. <a href="run.html"><code>references/run-protocol.md</code></a> is the operational detail of each; read it once per run, before Phase 1.</p>
+<ol>
+<li><strong>Frame</strong> — turn the behaviour into a run brief (<code>assets/run-brief.yaml</code>): branch, model, contrast pair, the four splits, meters, budgets, preservation tiers. Ask Prometheus to design the behaviour rubric and the preservation rubric (Shape 6, with calibration anchors). Audit the design for confounds and Goodhart risk (<a href="cards/contrast-design.html"><code>cards/contrast-design.md</code></a>). On present deployment, the brief is confirmed by the user before Phase 2.</li>
+<li><strong>Map</strong> — the Cartographer (<a href="roles/cartographer.html"><code>roles/cartographer.md</code></a>) captures activations on the fit split, reads weights and attention WSP-style, writes a localisation hypothesis with evidence, and applies the <strong>feasibility gate</strong>: a behaviour with no switchable component ends the run here with a report, because editing removes an obstacle, it cannot add a missing ability.</li>
+<li><strong>Floor</strong> — run the baseline pipeline yourself from the cards: ARA (or abliteration, per brief) with multi-objective TPE over the standard meters (<a href="cards/tpe.html"><code>cards/tpe.md</code></a>, <a href="cards/ara.html"><code>cards/ara.md</code></a>). Its best Pareto trial is <strong>candidate zero</strong>. On the semantic branch the floor is the naive operator: the good-condition instruction itself.</li>
+<li><strong>Tournament</strong> — for each preservation tier, from loosest to tightest, instantiate Alchemist with <code>assets/alchemist-run-config.yaml</code> and the role prompts in <code>roles/</code>, seeded with candidate zero as iteration 0. Converged candidates join the front; a proven barrier ends the ratchet and is reported as the tightest feasible tier.</li>
+<li><strong>Seal</strong> — score every front candidate once on the vault, run the head-to-head against the floor, write the report (<code>assets/report-template.md</code>) and the manifest, export the chosen candidate to a new folder.</li>
+</ol>
+<p><strong>Running Alchemist unattended.</strong> Alchemist defaults to dry-run when nobody is present, because a live tournament spends tokens a returning user did not approve. The brief&#39;s <code>approved: true</code>, written by the user before the run, is that approval: pass <code>mode: forge</code>. Without it, produce the harness (dry-run) and stop after Phase 3.</p>
+<h2 id="failure-modes-seen-in-this-kind-of-work">Failure modes seen in this kind of work</h2>
+<ul>
+<li><strong>Fitting to the judge.</strong> A compiler that learns what the behaviour tester rewards will swap words instead of removing behaviour. Alchemist&#39;s invariant I1 (the compiler sees fixes, never verdicts) and the Goodhart tester exist for this; never relax either.</li>
+<li><strong>Reading the vault early.</strong> Any look at vault prompts or vault scores before Phase 5 converts the vault into another dev split. If it happens, say so in the report and treat all scores as dev scores.</li>
+<li><strong>Trusting a technique you did not check.</strong> The details are where it is subtle (the hidden-state index shift, left padding, KL direction, the A = B = 0 saddle, ARA&#39;s row norms). The self-checks catch these; skipping one is how a run reports a confident wrong result.</li>
+<li><strong>Calling a prompt operator a model edit.</strong> On the semantic branch, report results as &quot;with this operator&quot;, never as a change to the model.</li>
+</ul>
+<h2 id="report">Report</h2>
+<p>The final message to the user leads with the outcome in one sentence (the chosen candidate, its vault behaviour score and preservation score, and how it compares with the floor), then the front, then what the ledger flags for their eyes (deviations, inconclusive gates, budget exhaustion). Template: <code>assets/report-template.md</code>.</p>
+<h2 id="read-when">Read when …</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Read when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="run.html"><code>references/run-protocol.md</code></a></td>
+<td>starting a run; the operational detail of each phase, the run folder, budgets, tiers</td>
+</tr>
+<tr>
+<td><a href="coordination.html"><code>references/coordination.md</code></a></td>
+<td>Phase 4: roles, contracts, information flow, failure handling</td>
+</tr>
+<tr>
+<td><a href="cards/stream-and-capture.html"><code>cards/stream-and-capture.md</code></a></td>
+<td>any capture on the weights branch: residual stream, writers, decision token, hooks</td>
+</tr>
+<tr>
+<td><a href="cards/response-prefix.html"><code>cards/response-prefix.md</code></a></td>
+<td>before any generation or first-token measurement on a model with a chat template</td>
+</tr>
+<tr>
+<td><a href="cards/contrast-design.html"><code>cards/contrast-design.md</code></a></td>
+<td>Phase 1: building the pair and splits, presets, confound audit</td>
+</tr>
+<tr>
+<td><a href="cards/directions.html"><code>cards/directions.md</code></a></td>
+<td>difference of means, winsorization, interpolation, projected abliteration</td>
+</tr>
+<tr>
+<td><a href="cards/directional-ablation.html"><code>cards/directional-ablation.md</code></a></td>
+<td>abliteration edits: rank-1 LoRA, weight kernel, MPOA row normalization</td>
+</tr>
+<tr>
+<td><a href="cards/ara.html"><code>cards/ara.md</code></a></td>
+<td>ARA: capture, loss, LoRA rank, initialization, L-BFGS, known flaws and fixes</td>
+</tr>
+<tr>
+<td><a href="cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a></td>
+<td>attaching adapters, resetting between candidates, exporting, quantized models</td>
+</tr>
+<tr>
+<td><a href="cards/meters.html"><code>cards/meters.md</code></a></td>
+<td>keyword rate, first-token KL, classifier, benchmark, length: the standard meters</td>
+</tr>
+<tr>
+<td><a href="cards/llm-judges.html"><code>cards/llm-judges.md</code></a></td>
+<td>Phase 1 rubric design and every tester</td>
+</tr>
+<tr>
+<td><a href="cards/tpe.html"><code>cards/tpe.md</code></a></td>
+<td>the floor&#39;s search, and numeric-knob sweeps inside the compiler</td>
+</tr>
+<tr>
+<td><a href="cards/floor-and-front.html"><code>cards/floor-and-front.md</code></a></td>
+<td>Phases 3–5: candidate zero, tiers, Pareto front, vault, winner&#39;s curse, head-to-head</td>
+</tr>
+<tr>
+<td><a href="cards/reproducibility.html"><code>cards/reproducibility.md</code></a></td>
+<td>workbench, self-check logging, pins, manifest</td>
+</tr>
+<tr>
+<td><a href="cards/feasibility-and-locate.html"><code>cards/feasibility-and-locate.md</code></a></td>
+<td>Phase 2: WSP reading, localisation, the feasibility gate</td>
+</tr>
+<tr>
+<td><a href="cards/wsp-edit.html"><code>cards/wsp-edit.md</code></a></td>
+<td>sparse and structural weight edits beyond the two standard modifiers</td>
+</tr>
+<tr>
+<td><a href="cards/semantic-branch.html"><code>cards/semantic-branch.md</code></a></td>
+<td>anything on a closed model</td>
+</tr>
+<tr>
+<td><code>roles/*.md</code></td>
+<td>Phase 2 (Cartographer) and Phase 4 (compiler, testers, judge)</td>
+</tr>
+<tr>
+<td><code>assets/*</code></td>
+<td>the brief, ledger, Alchemist run-config and report templates</td>
+</tr>
+</tbody></table>
+<h2 id="start-here">Start here</h2>
+<p>Create the run folder (<a href="run.html"><code>references/run-protocol.md</code></a>, Run folder), copy <code>assets/run-brief.yaml</code> into it, open <code>ledger.md</code> with the first entry, and begin Phase 1.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="index.html">← Schism</a><a href="run.html">The run, phase by phase →</a></nav>
+<a class="back" href="../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

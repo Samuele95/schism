@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The run, phase by phase — Schism reading room</title>
+<meta name="description" content="Schism reading room: The run, phase by phase." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html">Schism</a></li><li><a href="skill.html">The skill</a></li><li><a href="run.html" aria-current="page">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/references/run-protocol.md">
+<p class="crumb">The run</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/references/run-protocol.md"><code>schism/references/run-protocol.md</code></a>, as written.</p>
+<h1 id="run-protocol">Run protocol</h1>
+<p>The operational detail of the five phases. SKILL.md says what each phase is for; this file says what to do, what to write, and when the phase is over.</p>
+<h2 id="run-folder">Run folder</h2>
+<pre><code>runs/&lt;run-id&gt;/                    run-id = &lt;model-slug&gt;-&lt;behaviour&gt;-&lt;yyyymmdd-hhmm&gt;
+  brief.yaml                      the run brief (assets/run-brief.yaml, filled)
+  ledger.md                       append-only run memory (assets/ledger.md)
+  splits/
+    fit.jsonl  probe.jsonl  dev.jsonl
+    vault.sealed.jsonl            + vault.sha256; opened only in Phase 5
+  map/                            Cartographer report, figures, localisation hypothesis
+  floor/                          candidate-0 spec, TPE journal, Pareto trials, measurements
+  tiers/tier-&lt;k&gt;/                 one Alchemist run per preservation tier
+    run-config.yaml  H-ledger.md  candidates/  bundles/
+  seal/                           vault scores, head-to-head, front, report.md, manifest.json
+  exports/&lt;candidate-id&gt;/         new folder per export; never the model&#39;s own folder
+workbench/                        shared across runs: implementations + self-check logs
+</code></pre>
+<p>The workbench lives outside the run folder so that a technique checked once serves every later run on the same environment; a run records the workbench commit or file hashes it used.</p>
+<h2 id="phase-1-frame">Phase 1 — Frame</h2>
+<ol>
+<li><strong>Restate the behaviour</strong> as two observable conditions: what responses look like with it (<em>bad</em>) and without it (<em>good</em>). If you cannot write both in one sentence each, the behaviour is not yet defined; on present deployment, ask; unattended, take the narrowest reading and record it.</li>
+<li><strong>Pick the branch and the model.</strong> Weights if the model loads locally; semantic otherwise. Record model id, revision and dtype.</li>
+<li><strong>Build the contrast pair and the four splits</strong> (<a href="cards/contrast-design.html"><code>cards/contrast-design.md</code></a>). Default sizes: fit 400 + 400, probe 100 per condition plus 50 neutral, dev 100 per condition plus 100 neutral, vault 100 per condition plus 100 neutral. Seal the vault: write it, hash it, and from then on read only the hash.</li>
+<li><strong>Choose the meters.</strong> The standard meters (<a href="cards/meters.html"><code>cards/meters.md</code></a>) always run, because they are the floor&#39;s objectives and the head-to-head&#39;s common currency. LLM judges (<a href="cards/llm-judges.html"><code>cards/llm-judges.md</code></a>) run as testers in Phase 4.</li>
+<li><strong>Design the rubrics.</strong> Send Prometheus a Shape 6 spec for the behaviour judge and the preservation judge: the behaviour sentence pair, five dev examples per condition as anchor material, pass/fail output, an abstention path. Store the returned rubrics in <code>brief.yaml</code>.</li>
+<li><strong>Set budgets and tiers.</strong> Probe budget per tournament iteration (default 10 forward-pass calls), total probe budget (default 150), tournament N (default 6, from 4 testers), preservation tiers (default for first-token KL: 0.40, 0.20, 0.10; semantic branch: drift ≤ 2.0×, 1.5×, 1.2× the sampling noise floor, see <a href="cards/semantic-branch.html"><code>cards/semantic-branch.md</code></a>), behaviour target (default: the behaviour tester&#39;s judged rate on candidate zero&#39;s dev bundle, fixed after Phase 3; the tournament matches the floor&#39;s removal and buys tighter preservation, which is where the floor is weakest).</li>
+<li><strong>Audit the design</strong> with the confound checklist in <a href="cards/contrast-design.html"><code>cards/contrast-design.md</code></a>. Record findings.</li>
+<li><strong>Gate.</strong> Present: show the brief, ask for confirmation. Unattended: write every unasked choice into the ledger as a marked assumption and continue.</li>
+</ol>
+<p><strong>Done when</strong> <code>brief.yaml</code> is complete, the vault is sealed and hashed, and the ledger holds the Frame entry.</p>
+<h2 id="phase-2-map">Phase 2 — Map</h2>
+<p>Dispatch the Cartographer (<a href="roles/cartographer.html"><code>roles/cartographer.md</code></a>) with: the brief&#39;s <code>behaviour</code>, <code>branch</code>, <code>model</code> and <code>contrast</code> blocks only, plus the fit and probe splits (incl. probe-neutral), the probe budget for mapping (default 30 of the total), and the relevant cards. Do not hand the Cartographer the brief&#39;s <code>judges</code>, <code>floor</code>, <code>tournament</code> or <code>splits.dev</code>/<code>splits.vault</code> blocks, the rubric files, or any file that mentions dev or vault prompts; the map feeds the compilers, so anything the Cartographer sees leaks there. It returns <code>map/report.md</code> with a localisation hypothesis, evidence, and a feasibility verdict: <strong>switchable</strong>, <strong>diffuse</strong>, or <strong>absent</strong>.</p>
+<ul>
+<li><strong>switchable</strong> → Phase 3.</li>
+<li><strong>diffuse</strong> (the behaviour is present but spread over many components with no dominant one) → Phase 3, with the note that sparse edits are unlikely to beat the floor; the tournament then favours ARA-family edits.</li>
+<li><strong>absent</strong> (no reliable difference between conditions anywhere the Cartographer looked) → stop. Write the report: what was measured, why the gate closed. This is a result, not a failure.</li>
+<li><strong>inconclusive</strong> (the mapping budget ran out before a verdict) → Phase 3 as diffuse, with the inconclusive verdict in the report.</li>
+</ul>
+<p>On the semantic branch the map is embedding geometry and the gate asks whether the good-condition instruction moves responses at all (<a href="cards/semantic-branch.html"><code>cards/semantic-branch.md</code></a>).</p>
+<h2 id="phase-3-floor">Phase 3 — Floor</h2>
+<p>Implement and self-check the baseline pipeline the brief names (default ARA; abliteration if requested or if ARA&#39;s self-check fails on this architecture), then run multi-objective TPE over its knobs with the standard meters on the dev split (<a href="cards/tpe.html"><code>cards/tpe.md</code></a>). Defaults: 100 trials, 30 start-up, seeded. Record the Pareto trials in <code>floor/</code>.</p>
+<p><strong>Candidate zero</strong> is the floor trial with the lowest behaviour meter among those inside the loosest preservation tier. If no floor trial is inside the loosest tier, record that; the tournament starts from the floor trial nearest to it.</p>
+<p>On the semantic branch: candidate zero is the good-condition instruction used verbatim as the operator.</p>
+<p>If the brief allows a reduced floor (<code>floor.trials</code>), say in the report that the head-to-head compares against a weaker baseline than a default run.</p>
+<p><strong>Reference rates.</strong> Bench the unedited model and candidate zero once on dev. Run the behaviour tester&#39;s rubric over both as a <strong>rate-only call</strong> (return the BAD rate, no pass/fail verdict — the target does not exist yet) and the keyword meter. Store <code>keyword_rate_base</code>, <code>keyword_rate_new</code> (candidate zero&#39;s keyword rate) and <code>judge_rate_base</code> for every later <code>summary.json</code>. For the Goodhart tester&#39;s calibration, also have the T4 model label every third response from the unedited set and store the result as <code>judge_rate_base_t4</code>. Set the behaviour target from candidate zero&#39;s judged rate.</p>
+<h2 id="phase-4-tournament">Phase 4 — Tournament</h2>
+<p>For each tier k from loosest to tightest:</p>
+<ol>
+<li>Fill <code>tiers/tier-k/run-config.yaml</code> from <code>assets/alchemist-run-config.yaml</code>: the target statement with tier k&#39;s preservation threshold, the testers, <code>halt: all_pass</code>, N.</li>
+<li>Iteration 0 is candidate zero (or the previous tier&#39;s converged candidate): bench it, test it. If it already passes all testers, it is tier k&#39;s converged candidate; go to the next tier.</li>
+<li>Otherwise run Alchemist with the roles in <code>roles/</code>, in forge mode when the deployment is present or the brief says <code>approved: true</code>, in dry-run otherwise (SKILL.md, Running Alchemist unattended) (<a href="coordination.html"><code>references/coordination.md</code></a> gives the wiring and the bench step between compiler and testers).</li>
+<li><strong>Converged</strong> → add the candidate to the front, carry it as iteration 0 of tier k+1.
+<strong>Barrier at N</strong> → record Alchemist&#39;s infeasibility report; tier k−1 is the tightest feasible tier (at k = 1, the front is the floor alone); stop the ratchet.</li>
+</ol>
+<p>Bench every candidate on the dev split only. The probe split belongs to the compiler; the vault to Phase 5.</p>
+<h2 id="phase-5-seal">Phase 5 — Seal</h2>
+<ol>
+<li>Assemble the front: floor Pareto trials plus every converged tournament candidate.</li>
+<li>Open the vault once, after verifying its hash; on a mismatch stop and report that no vault score is valid. Score every front candidate on it with all meters and both judges, in one pass. No candidate changes after this.</li>
+<li>Head-to-head (<a href="cards/floor-and-front.html"><code>cards/floor-and-front.md</code></a>): the best floor trial against the best tournament candidate at each tier, on vault scores, plus capability and cost (GPU hours, model tokens, probe calls).</li>
+<li>Pick the recommended candidate: the tightest-tier candidate whose vault behaviour score meets the target; ties go to fewer changed weights. On present deployment, offer the front and let the user choose.</li>
+<li>Export it to <code>exports/&lt;candidate-id&gt;/</code> (<a href="cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a>), write <code>seal/manifest.json</code> (<a href="cards/reproducibility.html"><code>cards/reproducibility.md</code></a>) and the report.</li>
+</ol>
+<p><strong>Done when</strong> the report, manifest and export exist and the ledger&#39;s last entry points to them.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="skill.html">← The skill</a><a href="branches.html">Two branches →</a></nav>
+<a class="back" href="../index.html#s6">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

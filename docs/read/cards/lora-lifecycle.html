@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LoRA lifecycle — Schism reading room</title>
+<meta name="description" content="Schism reading room: LoRA lifecycle." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html" aria-current="page">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/lora-lifecycle.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/lora-lifecycle.md"><code>schism/cards/lora-lifecycle.md</code></a>, as written.</p>
+<h1 id="card-lora-lifecycle-attach-reset-export">Card — LoRA lifecycle: attach, reset, export</h1>
+<p><strong>What it buys.</strong> Every weight edit is reversible in microseconds, the original never changes, and the result ships as merged weights or a small adapter.</p>
+<h2 id="attach-once-per-session">Attach (once per session)</h2>
+<p>Wrap every writer (<a href="../cards/stream-and-capture.html"><code>cards/stream-and-capture.md</code></a>) with a PEFT LoRA adapter: <code>target_modules</code> = the writer module names, <code>r</code> = the largest rank any candidate will need (50 for ARA, 3 for MPOA, 1 for plain directional; sparse edits may need more, or a separate delta, see <a href="../cards/wsp-edit.html"><code>cards/wsp-edit.md</code></a>), <code>lora_alpha = r</code> so the adapter adds exactly BA, <code>lora_dropout = 0</code>. Zero both A and B after creation: PEFT initializes A randomly, and a nonzero A left over is a hidden starting point.</p>
+<p>When candidates need different ranks, attach at the maximum and fill the unused rank slots with zeros.</p>
+<h2 id="reset-between-candidates">Reset between candidates</h2>
+<p><strong>Fast path:</strong> zero every A and B. Zeroing A as well as B means a module the next candidate does not touch carries nothing from the previous one. <strong>Slow path:</strong> reload from disk only after <code>merge_and_unload</code> has folded an adapter into the base, or when switching models.</p>
+<h2 id="snapshot-and-revert-wsp-style-keep-if-better">Snapshot and revert (WSP-style keep-if-better)</h2>
+<p>Before applying a candidate, keep a CPU copy of the adapter tensors it will change; revert by copying back. The bench step always ends with a reset; the compiler&#39;s own probe experiments end with a revert.</p>
+<h2 id="export">Export</h2>
+<ul>
+<li><strong>Merged weights:</strong> <code>merge_and_unload()</code>, then <code>save_pretrained</code> to <code>exports/&lt;candidate-id&gt;/</code> with the tokenizer. If the session model is 4-bit, reload the base in full precision first, attach and copy the adapter, then merge: merging into quantized weights requantizes them and loses precision, and the quantization-error caveat applies either way (<a href="../cards/directional-ablation.html"><code>cards/directional-ablation.md</code></a>).</li>
+<li><strong>Adapter only:</strong> save the adapter; record the base model id and revision it applies to.</li>
+<li><strong>Non-LoRA deltas</strong> (side paths, <a href="../cards/wsp-edit.html"><code>cards/wsp-edit.md</code></a>): export merged only. Load the base in full precision, apply the stored delta with <code>copy_</code>, merge any LoRA part, save. An adapter-only export cannot carry them; refuse it and say why.</li>
+<li>Never the model&#39;s own folder; never overwrite an existing export folder. Write a short model card: base model, technique, behaviour, vault scores, the manifest&#39;s hash.</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>After attach and zeroing, model outputs on 5 probe prompts are bit-identical to the unwrapped model&#39;s (greedy).</li>
+<li>Apply a candidate, reset, re-run: bit-identical to step 1.</li>
+<li>Merged export reloaded from disk reproduces the adapter model&#39;s greedy outputs on 5 probe prompts.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/ara.html">← ARA: Arbitrary-Rank Ablation</a><a href="../cards/meters.html">Standard meters →</a></nav>
+<a class="back" href="../../index.html#s11">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

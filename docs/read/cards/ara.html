@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ARA: Arbitrary-Rank Ablation — Schism reading room</title>
+<meta name="description" content="Schism reading room: ARA: Arbitrary-Rank Ablation." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html" aria-current="page">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/ara.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/ara.md"><code>schism/cards/ara.md</code></a>, as written.</p>
+<h1 id="card-ara-arbitrary-rank-ablation">Card — ARA: Arbitrary-Rank Ablation</h1>
+<p><strong>What it buys.</strong> The default modifier: no direction, no rank-1 assumption. Each writer&#39;s edit is fitted to what that writer actually emits, so that harmful outputs land among real harmless outputs while harmless outputs stay where they were.</p>
+<h2 id="capture">Capture</h2>
+<p>For every writer in the layer range, hook it (<a href="../cards/stream-and-capture.html"><code>cards/stream-and-capture.md</code></a>) and record at the last prompt token, for fit-split good and bad prompts: inputs Z_g, Z_b (one row per prompt, d_in wide) and outputs Y_g, Y_b (d wide). Captured once, from the unedited model, kept on CPU.</p>
+<h2 id="loss-per-module">Loss, per module</h2>
+<p>With ΔW = BA and new outputs Ỹ = Z(W + BA)ᵀ (+ bias, added after any rescale):</p>
+<pre><code>L = w_p · mean[(Ỹ_g − Y_g)²]
+  + w_s · ( mean_i kNN_k(ỹ_b,i , Y_g) − ρ · mean_i kNN_k(ỹ_b,i , Y_b) )
+
+kNN_k(x, S) = mean of the k smallest Euclidean distances from x to the rows of S
+             (torch.cdist, then topk(k, largest=False))
+</code></pre>
+<ul>
+<li><em>preserve</em>: harmless emissions must not move (elementwise MSE).</li>
+<li><em>pull</em>: each new harmful output toward its k nearest <strong>original</strong> harmless outputs. The target is fixed; measuring against Ỹ_g would let the optimizer drag the harmless cloud toward the harmful one when w_p is small.</li>
+<li><em>push</em>: away from the original harmful outputs, own original included. ρ &gt; 0 overshoots on purpose, the same logic as λ &gt; 1: beat refusal routes a single writer cannot see.</li>
+</ul>
+<p>Matching <em>means</em> instead of neighbours can park outputs in an empty gap between harmless clusters; neighbours keep each output inside a region harmless outputs really occupy.</p>
+<h2 id="knobs-search-ranges">Knobs (search ranges)</h2>
+<table>
+<thead>
+<tr>
+<th>Knob</th>
+<th>Range</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>start_layer_index</code></td>
+<td>[0, L/2]</td>
+</tr>
+<tr>
+<td><code>end_layer_index</code> (exclusive)</td>
+<td>[L/2 + 1, L] — never empty, always covers the middle</td>
+</tr>
+<tr>
+<td><code>preserve_good_behavior_weight</code> w_p</td>
+<td>[0, 1]</td>
+</tr>
+<tr>
+<td><code>steer_bad_behavior_weight</code> w_s</td>
+<td>[1e-4, 1], log-uniform (squared vs unsquared terms differ by orders of magnitude)</td>
+</tr>
+<tr>
+<td><code>overcorrect_relative_weight</code> ρ</td>
+<td>[0, 1.3]</td>
+</tr>
+<tr>
+<td><code>neighbor_count</code> k</td>
+<td>[1, min(15, N_good, N_bad)]</td>
+</tr>
+</tbody></table>
+<p>Every writer in [start, end) is fitted with the same knobs.</p>
+<h2 id="optimization-per-module">Optimization, per module</h2>
+<ul>
+<li><strong>Rank 50</strong> (<code>lora_rank</code>): singular values of fitted edits fall off after a few dozen. The cap is storage, not a model of the behaviour.</li>
+<li><strong>Initialization:</strong> A ← Kaiming-uniform (a = √5), drawn from a CPU <code>torch.Generator</code> seeded with the run seed and created once per modify call; B ← 0. Then ΔW = 0 (model unchanged) but ∂L/∂B = G·Aᵀ ≠ 0. <strong>A = B = 0 is a saddle</strong>: ∂L/∂B = G·Aᵀ = 0 and ∂L/∂A = Bᵀ·G = 0, nothing ever moves.</li>
+<li><strong>Low-rank forward:</strong> precompute Z Wᵀ once in float32 from the float32 weight (not from the captured output, which was produced in the model dtype and would change the objective); per evaluation compute (Z Aᵀ) Bᵀ. Never form W + BA for the outputs.</li>
+<li><strong>Row norms</strong> (<code>preserve_row_magnitudes</code>, default true): scale output column j by n_j / ‖(W + BA)_j‖. This does form W + BA, for the norms.</li>
+<li><strong>L-BFGS:</strong> <code>lr=1.0, max_iter=20, history_size=10, line_search_fn=&quot;strong_wolfe&quot;</code>, 5 outer <code>step()</code> calls. Full batch, deterministic. If the session disables gradients globally, note that <code>LBFGS.step</code> wraps the closure in <code>torch.enable_grad()</code>; gradients exist only there. Free buffers after each module (<code>zero_grad(set_to_none=True)</code>).</li>
+<li>Move each module&#39;s captured tensors to the device just for its fit.</li>
+</ul>
+<h2 id="known-flaws-and-the-opt-in-fixes-schism-allows">Known flaws, and the opt-in fixes Schism allows</h2>
+<p>The baseline behaviour is the floor; these are moves the compiler may propose, each recorded in the edit spec.</p>
+<ol>
+<li><strong>Row norms only in the objective.</strong> The deployed adapter is raw BA; nothing rescales deployed rows, so the evaluated edit is not the optimized one. <em>Fix:</em> after fitting, compute the full rescaled ΔW and compress it with the MPOA SVD step (<a href="../cards/directional-ablation.html"><code>cards/directional-ablation.md</code></a>) at rank ≤ 50, then report the compression energy.</li>
+<li><strong>Unobserved input directions (known issue, open).</strong> A few hundred prompts span far fewer than d_in dimensions; components of ΔW in unused directions are unconstrained, and floating-point noise there can be amplified by the line search and kept in the L-BFGS history. Symptoms: different optima for mathematically equivalent formulations; some trials with high KL. <em>Fix:</em> add a ridge term γ‖BA‖²_F (it pins unobserved directions to zero change; it also shrinks useful edits, so γ is a searched knob, start at 1e-4 relative to the preserve term).</li>
+<li><strong>Stale inputs.</strong> Every module is fitted against inputs from the unedited model; after upstream writers change, later layers see different inputs. <em>Fix:</em> fit layer by layer, re-capturing the inputs of layer ℓ+1 with layers ≤ ℓ already edited. Costs one capture per layer.</li>
+<li><strong>Overshoot with ρ &gt; 1.</strong> Sending a harmful output far away grows the push faster than the pull; along unobserved directions the preserve term offers no resistance, so the objective has no lower bound. Row rescaling bounds it in the objective only. Keep ρ ≤ 1 unless fix 1 or fix 2 is on.</li>
+</ol>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>The low-rank and dense formulations of Ỹ agree to 1e-9 in float64, with and without bias, with and without row rescaling.</li>
+<li>Starting from A = B = 0, the gradient is exactly zero; starting from the seeded A and B = 0, ‖∂L/∂B‖ &gt; 0 and the model output is unchanged.</li>
+<li>With w_s = 0, the fitted edit stays tiny: ‖BA‖_F / ‖W‖_F &lt; 1e-3. Preserve alone is nearly satisfied by ΔW = 0; the only residual signal is the dtype gap between the float32 recomputation and the captured outputs, so a large edit here means a bug.</li>
+<li>Same seed, same captures → byte-identical A and B.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/directional-ablation.html">← Directional ablation and MPOA</a><a href="../cards/lora-lifecycle.html">LoRA lifecycle →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

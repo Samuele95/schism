@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Directions — Schism reading room</title>
+<meta name="description" content="Schism reading room: Directions." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html" aria-current="page">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/directions.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/directions.md"><code>schism/cards/directions.md</code></a>, as written.</p>
+<h1 id="card-directions-difference-of-means-winsorization-projection">Card — Directions: difference of means, winsorization, projection</h1>
+<p><strong>What it buys.</strong> One unit vector per layer that summarizes how the stream differs between bad and good prompts at the decision token: the input to directional ablation, and a cheap localisation instrument for the Cartographer.</p>
+<h2 id="difference-of-means">Difference of means</h2>
+<p>For every stream position ℓ = 0…L (embedding included):</p>
+<pre><code>μ_ℓ^bad  = mean over bad fit prompts of x_ℓ(p)
+μ_ℓ^good = mean over good fit prompts of x_ℓ(p)
+r̂_ℓ      = normalize(μ_ℓ^bad − μ_ℓ^good)        shape (L+1, d)
+</code></pre>
+<p>Accumulate sums in float64 on CPU batch by batch. Averaging cancels whatever varies independently of the behaviour and keeps the shared offset; PCA would instead find the largest variance, usually topic. Sign does not matter for ablation (vvᵀ is sign-blind).</p>
+<p><strong>Winsorization</strong> (optional; default off, q = 1.0): before averaging, per prompt and per layer, clamp each coordinate to ±(the q-quantile of that vector&#39;s absolute values). Use q ≈ 0.95–0.995 when the model has massive activations (a few coordinates orders of magnitude larger than the rest, nearly prompt-independent) that would dominate the means.</p>
+<h2 id="choosing-the-direction-per-layer">Choosing the direction per layer</h2>
+<ul>
+<li><strong>Per layer:</strong> the writers of layer ℓ use r̂[ℓ+1], the stream right after that layer.</li>
+<li><strong>Global:</strong> one direction for every layer, read at a real-valued index i.f (sampled in [0.4, 0.9]·(L−1)): <code>v = normalize(lerp(r̂[i+1], r̂[i+2], f))</code>. The fraction lets a continuous optimizer move smoothly between layers; neighbouring directions are usually close, so interpolation is meaningful. The band reflects where the distinction is clearest: after the model has understood the request, before it has committed to tokens.</li>
+</ul>
+<h2 id="projected-abliteration-orthogonalization">Projected abliteration (orthogonalization)</h2>
+<p>Remove from each direction its component along the mean good state:</p>
+<pre><code>ĝ_ℓ = normalize(μ_ℓ^good)
+r′_ℓ = r̂_ℓ − (r̂_ℓ · ĝ_ℓ) ĝ_ℓ ,   v_ℓ = normalize(r′_ℓ)
+</code></pre>
+<p>The parallel part says &quot;bad prompts push further along what normal answers already do&quot;; removing it would damage ordinary replies. The default is on. If r′ is (near) zero, the bad condition differs from good only in magnitude along the harmless direction at that layer; <code>normalize</code> then returns ~0 and the layer gets no edit, which is the correct outcome, but record it.</p>
+<h2 id="what-the-direction-is-and-is-not">What the direction is and is not</h2>
+<p>It is a contrast between two datasets at one token, not a concept. It is the best linear separator only when both clouds are round; with stretched, correlated clouds the separator Σ⁻¹Δμ can sit far from it, and with ~800 prompts in thousands of dimensions Σ cannot be inverted reliably. Use the direction as an edit target and as a hypothesis; let the testers judge the edit.</p>
+<h2 id="instruments-for-the-cartographer-cheap-from-the-same-capture">Instruments for the Cartographer (cheap, from the same capture)</h2>
+<ul>
+<li>‖μ^bad − μ^good‖ per layer, normalized by the mean stream norm: where the difference grows.</li>
+<li>Linear separability per layer: accuracy of a logistic probe on fit, evaluated on probe.</li>
+<li>cos(r̂_ℓ, r̂_ℓ+1): where the direction stabilizes.</li>
+<li>cos(r̂_ℓ, ĝ_ℓ): how much orthogonalization will remove.</li>
+</ul>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Swap the good and bad sets: r̂ must flip sign exactly.</li>
+<li>Synthetic: with a forward hook, add a fixed vector u to the output of layer j at the last token for the &quot;bad&quot; copy of a set of identical prompts; the recovered r̂ at stream index j+1 must have cosine &gt; 0.99 with u. This proves the capture, the index shift and the subtraction together.</li>
+<li>With orthogonalization on, confirm r′_ℓ · ĝ_ℓ ≈ 0 for every layer.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/contrast-design.html">← Contrast design, presets and splits</a><a href="../cards/directional-ablation.html">Directional ablation and MPOA →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

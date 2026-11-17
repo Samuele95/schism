@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The semantic branch — Schism reading room</title>
+<meta name="description" content="Schism reading room: The semantic branch." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html" aria-current="page">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/semantic-branch.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/semantic-branch.md"><code>schism/cards/semantic-branch.md</code></a>, as written.</p>
+<h1 id="card-the-semantic-branch-closed-models">Card — The semantic branch: closed models</h1>
+<p><strong>What it buys.</strong> The standard recipe on a model whose weights you cannot touch. The edit becomes a prompt operator; every geometric quantity is measured on embeddings of sampled responses; Prometheus writes the operators and Alchemist converges them.</p>
+<h2 id="scope">Scope</h2>
+<p>Behaviour and style traits: slop, sycophancy, verbosity, humor, tone, looping, formatting habits. A result here is &quot;this model <strong>with this operator</strong>&quot;, never a change to the model; it costs the operator&#39;s tokens on every call, a user&#39;s own instructions can override it, and it may not survive a model update.</p>
+<h2 id="sampling">Sampling</h2>
+<p>You reach the model through the sampling command recorded in the brief (a headless agent invocation or an API call). Check the available flags for appending or replacing a system prompt, restricting tools, and returning JSON; record the exact command in the brief. Measure under the same wrapper for every condition, so the wrapper is a constant, not a confound. Sample n = 3 responses per prompt (sampling settings are not exposed here; repetitions estimate the noise). Every sample counts against the brief&#39;s sample budget.</p>
+<h2 id="embeddings">Embeddings</h2>
+<p>Use the strongest embedding model available locally; choose it yourself, record it, and keep it fixed for the run. Embed full responses (truncate consistently if needed). All distances below are cosine distances on normalized embeddings.</p>
+<h2 id="conditions-and-geometry-the-map">Conditions and geometry (the map)</h2>
+<p>On probe prompts, sample three sets: <strong>base</strong> (the prompt as is: the model&#39;s default behaviour), <strong>good</strong> (the prompt with the good-condition instruction), <strong>neutral</strong> (the probe-neutral prompts, as is). Compute:</p>
+<ul>
+<li>behaviour axis a = normalize(mean emb(base) − mean emb(good)): the semantic analogue of r̂;</li>
+<li>separability of base vs good (logistic probe on half, accuracy on the other half);</li>
+<li>the noise floor: drift between two independent sample sets of the neutral prompts with no operator.</li>
+</ul>
+<p><strong>Feasibility gate.</strong> If base and good are not separable (accuracy &lt; 0.65), the instruction does not move the behaviour enough to measure: verdict <strong>absent</strong> for prompt-space steering. Otherwise <strong>switchable</strong>.</p>
+<h2 id="candidate-operators">Candidate operators</h2>
+<p>An operator is text placed as a system prompt, a prefix or a suffix (<a href="../coordination.html"><code>references/coordination.md</code></a>, operator spec). The compiler is <a href="../roles/operator-compiler.html"><code>roles/operator-compiler.md</code></a>, which sends Prometheus the design request; operators are never hand-written. Candidate zero (the floor) is the good-condition instruction used verbatim.</p>
+<h2 id="measurements-per-candidate-bench">Measurements per candidate (bench)</h2>
+<ul>
+<li><strong>Behaviour (ARA analogue):</strong> for dev base-condition prompts answered with the operator, pull = mean kNN_k(emb, E_good) and push = mean kNN_k(emb, E_base), k = 5, computed against the embeddings of the probe good and base sets; plus the LLM behaviour judge&#39;s rate.</li>
+<li><strong>Preservation:</strong> drift on neutral prompts = mean over prompts of (1 − cos(mean emb with operator, mean emb without)), reported as a multiple of the noise floor; plus the preservation judge on paired responses (intent and correctness kept).</li>
+<li><strong>Behaviour meter file:</strong> write pull, push, k and the keyword rate (when the behaviour has markers) to <code>behaviour_meter.json</code>, drift to <code>preservation_meter.json</code> (<a href="../coordination.html"><code>references/coordination.md</code></a>, Bundle).</li>
+<li><strong>Capability:</strong> a fixed slice of a generative task with checkable answers (default GSM8K, exact match), accuracy with and without the operator.</li>
+<li><strong>Cost:</strong> operator tokens.</li>
+</ul>
+<p>Default preservation tiers: drift ≤ 2.0×, 1.5×, 1.2× the noise floor.</p>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Two independent sample sets of the same condition must give separability within 0.5 ± 0.1; if not, the embedder or the sampling is leaking something other than the response.</li>
+<li>The floor operator (good instruction verbatim) must move dev base-condition responses toward the good set: pull decreases versus no operator. If it does not, re-check the gate.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/wsp-edit.html">← WSP-style weight edits</a><a href="../roles/cartographer.html">Cartographer →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

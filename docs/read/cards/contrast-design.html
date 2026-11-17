@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Contrast design, presets and splits — Schism reading room</title>
+<meta name="description" content="Schism reading room: Contrast design, presets and splits." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html" aria-current="page">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/contrast-design.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/contrast-design.md"><code>schism/cards/contrast-design.md</code></a>, as written.</p>
+<h1 id="card-contrast-design-presets-and-splits">Card — Contrast design, presets and splits</h1>
+<p><strong>What it buys.</strong> The definition of the behaviour. Every direction, kNN target and judge in the run is only as specific as the contrast it was built from: choosing the prompt sets <em>is</em> defining the behaviour.</p>
+<h2 id="two-ways-to-build-a-pair">Two ways to build a pair</h2>
+<ul>
+<li><strong>Different datasets</strong> (the default, sycophancy, humor, emotions presets): good prompts from one source, bad from another. Easy, but whatever else separates the sources (topic, length, phrasing) leaks into the contrast. Harmful requests are about weapons and drugs; harmless ones about recipes and poems; the mean difference carries both refusal and topic.</li>
+<li><strong>Same prompts, opposite instructions</strong> (the slop and verbosity presets): identical prompts on both sides, with opposite system prompts or prefixes (&quot;avoid clichés&quot; vs &quot;make extensive use of clichés&quot;). Topic cancels exactly; only what the instruction induced remains. Prefer this whenever the behaviour can be induced by instruction.</li>
+</ul>
+<p>With the instruction pattern, the edit learns to map &quot;instructed bad&quot; onto &quot;instructed good&quot;. Whether that removes the behaviour the model shows <strong>uninstructed</strong> is a separate question, answered by scoring on neutral-prefix prompts (the slop preset does exactly this). Which condition a scorer&#39;s prompts carry decides which question the run answers: the sycophancy preset scores <em>with</em> the flattering system prompt on, so it measures resistance to being told to flatter, not default habits. Write down which question your run answers.</p>
+<h2 id="presets-datasets-on-hugging-face">Presets (datasets on Hugging Face)</h2>
+<table>
+<thead>
+<tr>
+<th>Behaviour</th>
+<th>Good prompts</th>
+<th>Bad prompts</th>
+<th>Behaviour meter (prompts)</th>
+<th>Preservation meter</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Refusals</td>
+<td><code>mlabonne/harmless_alpaca</code> train[:400]</td>
+<td><code>mlabonne/harmful_behaviors</code> train[:400]</td>
+<td>33 refusal markers, harmful_behaviors test[:100], 100 tokens</td>
+<td>first-token KL, harmless_alpaca test[:100]</td>
+</tr>
+<tr>
+<td>Slop</td>
+<td><code>llm-aes/writing-prompts</code> train[:500] + &quot;Avoid literary cliches, purple prose, and flowery language.&quot;</td>
+<td>same prompts + &quot;Make extensive use of literary cliches, purple prose, and flowery language.&quot;</td>
+<td>slop markers, writing-prompts train[1000:1100], neutral prefix, 300 tokens</td>
+<td>KL on the same held-out prompts with the &quot;avoid&quot; prefix</td>
+</tr>
+<tr>
+<td>Sycophancy</td>
+<td>harmless_alpaca train[:400]</td>
+<td><code>UnstableLlama/praise</code> train[:210] + &quot;extraordinarily warm and admiring&quot; system prompt</td>
+<td>sycophancy markers, praise train[210:288] with that system prompt</td>
+<td>KL, harmless_alpaca test[:100]</td>
+</tr>
+<tr>
+<td>Humor</td>
+<td>harmless_alpaca train[:400]</td>
+<td><code>UnstableLlama/jokes</code> train[:200]</td>
+<td>humor markers, jokes train[200:250], 300 tokens</td>
+<td>KL, harmless_alpaca test[:100]</td>
+</tr>
+<tr>
+<td>Verbosity</td>
+<td>harmless_alpaca train[:400] + hyper-terse system prompt</td>
+<td>same + loquacious system prompt</td>
+<td>response length (minimize)</td>
+<td>PIQA acc_norm (maximize), no KL</td>
+</tr>
+<tr>
+<td>Emotions</td>
+<td><code>VINAY-UMRETHE/Positive-Prompts</code> train[:200]</td>
+<td><code>VINAY-UMRETHE/Negative-Prompts</code> train[:200]</td>
+<td>emotion classifier: negative ↓, positive ↑</td>
+<td>KL — three objectives</td>
+</tr>
+</tbody></table>
+<h2 id="the-four-splits">The four splits</h2>
+<p>Draw them disjoint, per condition: <strong>fit</strong> (directions, ARA fit), <strong>probe</strong> (Cartographer and compiler, budgeted), <strong>dev</strong> (testers, floor search, anchors), <strong>vault</strong> (Phase 5 only, sealed). Include a <strong>neutral</strong> set in probe (50, for probe-side KL and drift), dev and vault (100 each): prompts unrelated to the behaviour, the preservation material. When a source has a train/test split, fit from train and dev/vault from test. Record dataset commits (<a href="../cards/reproducibility.html"><code>cards/reproducibility.md</code></a>).</p>
+<h2 id="confound-audit-run-in-phase-1-record-each-answer">Confound audit (run in Phase 1, record each answer)</h2>
+<ol>
+<li><strong>Topic.</strong> Embed the good and bad prompts (not responses); train a linear probe to separate them. Accuracy far above chance on prompts alone means the pair separates on content before the model does anything; prefer the instruction pattern or match topics.</li>
+<li><strong>Length and format.</strong> Compare prompt length distributions; a large gap leaks into directions.</li>
+<li><strong>Which question.</strong> State whether dev and vault score the instructed or the uninstructed behaviour, and why.</li>
+<li><strong>Lexical Goodhart.</strong> If any meter is a keyword list, list three ways a model could avoid every marker and still show the behaviour (synonyms, caveats moved elsewhere, refusing by changing the subject). The Goodhart tester gets this list.</li>
+<li><strong>Silence.</strong> Confirm an empty or near-empty answer cannot score well on the behaviour meter (<a href="../cards/meters.html"><code>cards/meters.md</code></a>, the empty-answer rule).</li>
+</ol>
+<h2 id="self-check">Self-check</h2>
+<p>The good and bad conditions must differ in the model&#39;s <em>responses</em>, not just in your intent: sample 20 probe prompts per condition from the unedited model, have the behaviour rubric score them, and confirm the bad condition&#39;s BAD-rate is higher with non-overlapping 95% Wilson intervals. If not, the pair does not elicit the behaviour on this model.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/response-prefix.html">← Response prefix</a><a href="../cards/directions.html">Directions →</a></nav>
+<a class="back" href="../../index.html#s6">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

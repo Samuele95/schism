@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Install and run — Schism reading room</title>
+<meta name="description" content="Schism reading room: Install and run." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html">Schism</a></li><li><a href="skill.html">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html" aria-current="page">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="USAGE.md">
+<p class="crumb">Install and run</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/USAGE.md"><code>USAGE.md</code></a>, as written.</p>
+<h1 id="schism-install-and-run">Schism — install and run</h1>
+<h2 id="what-you-have">What you have</h2>
+<p><code>schism/</code> is an agent skill: the method, 15 technique cards, the role prompts for its Alchemist tournament, and run templates. It contains no code. The agent writes and self-checks the code at run time, then keeps it in a <code>workbench/</code> folder for later runs.</p>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li><strong>Skills:</strong> <code>schism</code>, <code>alchemist</code> and <code>prometheus</code> installed where the driving agent can load them. The WSP skill is optional; when present, Schism hands general weight reading and writing to it.</li>
+<li><strong>Weights branch:</strong> a machine that can load the model in bf16 (or 4-bit), with Python ≥ 3.10 and <code>torch</code>, <code>transformers</code>, <code>peft</code>, <code>accelerate</code>, <code>optuna</code>, <code>scikit-learn</code>, <code>datasets</code>. Optional: <code>bitsandbytes</code> (4-bit), <code>lm-eval</code> (capability meter).</li>
+<li><strong>Semantic branch:</strong> a headless LLM agent invocation (the sampling command) and a local embedding model, which the agent chooses. <code>sentence-transformers</code> and <code>scikit-learn</code>.</li>
+</ul>
+<h2 id="install">Install</h2>
+<p>Place <code>schism/</code> in the skills folder your LLM agent loads from, next to <code>alchemist/</code> and <code>prometheus/</code>.</p>
+<h2 id="run">Run</h2>
+<p>Name the behaviour, the model and how you are running it. For example:</p>
+<ul>
+<li><em>Interactive:</em> &quot;Use Schism to reduce slop in Qwen3-4B-Instruct. I&#39;m here, ask me if something is ambiguous.&quot;
+The brief gets <code>deployment: present</code>. You confirm the brief after Phase 1, and you pick from the front at the end.</li>
+<li><em>Unattended, overnight:</em> write the brief yourself (copy <code>schism/assets/run-brief.yaml</code>), set <code>deployment: unattended</code> and <code>approved: true</code>, then start the agent with &quot;Run the Schism brief at runs/<id>/brief.yaml.&quot;
+Without <code>approved: true</code>, Alchemist builds the tournament harness and stops after the floor. A live tournament spends tokens nobody approved.</li>
+<li><em>Closed model:</em> &quot;Use Schism on the semantic branch to make this model less sycophantic.&quot;</li>
+</ul>
+<p><strong>First run:</strong> do a calibration run before anything else. Use a small open model (about 1–2B parameters) and the slop preset. This checks the workbench&#39;s implementations against their self-checks, and every later run on that machine reuses the checked implementations.</p>
+<h2 id="models-and-reasoning-effort">Models and reasoning effort</h2>
+<ul>
+<li><strong>Orchestrator, Cartographer, Smith, Arbiter, Goodhart tester:</strong> these need the strongest reasoning available. Use the strongest model your agent driver supports, with extended thinking enabled for these roles.</li>
+<li><strong>Behaviour, preservation and capability testers:</strong> can run on a local model at temperature 0, but only after it passes the calibration check in <a href="cards/llm-judges.html"><code>cards/llm-judges.md</code></a> (all 10 Frame anchors labelled correctly).</li>
+<li><strong>Meters and bench:</strong> greedy decoding throughout, already fixed by the cards.</li>
+</ul>
+<h2 id="rough-cost-weights-branch">Rough cost, weights branch</h2>
+<p>The figures below are rough, not measured.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Default</th>
+<th>Rough cost</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Floor: 100 TPE trials of ARA</td>
+<td>GPU</td>
+<td>one standard abliteration run on the same model</td>
+</tr>
+<tr>
+<td>Map</td>
+<td>30 probe calls</td>
+<td>minutes of GPU time; one long frontier-model session</td>
+</tr>
+<tr>
+<td>Tournament: 3 tiers × up to 6 iterations</td>
+<td>6 subagent calls per iteration (compiler, 4 testers, judge)</td>
+<td>up to ~110 subagent calls, plus bench time</td>
+</tr>
+<tr>
+<td>Seal: vault pass for the whole front</td>
+<td>GPU</td>
+<td>minutes</td>
+</tr>
+</tbody></table>
+<p>On the semantic branch, cost is dominated by closed-model samples. Set <code>samples_total</code> in the brief.</p>
+<h2 id="where-results-land">Where results land</h2>
+<ul>
+<li><code>runs/&lt;run-id&gt;/seal/report.md</code>: outcome first, then the front, the head-to-head against the floor, and what needs your attention.</li>
+<li><code>runs/&lt;run-id&gt;/exports/&lt;candidate-id&gt;/</code>: the exported model or adapter.</li>
+<li><code>runs/&lt;run-id&gt;/ledger.md</code>: the full record.</li>
+</ul>
+
+<nav class="pn" aria-label="Previous and next"><a href="roles/arbiter.html">← Arbiter</a><a href="glossary.html">Glossary →</a></nav>
+<a class="back" href="../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

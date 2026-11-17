@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Locating a behaviour, and the feasibility gate — Schism reading room</title>
+<meta name="description" content="Schism reading room: Locating a behaviour, and the feasibility gate." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html" aria-current="page">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/feasibility-and-locate.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/feasibility-and-locate.md"><code>schism/cards/feasibility-and-locate.md</code></a>, as written.</p>
+<h1 id="card-locating-a-behaviour-and-the-feasibility-gate">Card — Locating a behaviour, and the feasibility gate</h1>
+<p><strong>What it buys.</strong> A written, evidenced hypothesis about where the behaviour lives, and an early stop when there is nothing to switch off. This is where Weight Space Programming (WSP) extends the baseline: the baseline never asks where; it edits a band and lets the search sort it out.</p>
+<h2 id="what-wsp-showed-takehi-et-al-2026-early-results-one-model-family">What WSP showed (Takehi et al., 2026; early results, one model family)</h2>
+<p>A frontier model read raw weights as a program: identified games, shapes and languages from weights alone; found every induction head in a small transformer by composing weight matrices, without running it; fixed a failing policy with a small side path (3.5% of weights). On Qwen3.5-0.8B it traced looping to one direction written by the MLPs of two layers and subtracted it from 64 output columns in each (0.016% of weights): MATH-500 7.9 → 48.1 at a 50-forward-pass budget, but only 12.3 and 14.1 at 10 and 25 passes. Two limits carry over as rules: <strong>weights alone failed</strong> to tell a sycophantic model from an honest one until attention patterns on self-written texts were allowed; and editing <strong>removed an obstacle but could not add a missing ability</strong> (Gemma 3 270M, no gain). The model used was not one you have; whether a frontier LLM can do the same is a hypothesis this run tests.</p>
+<h2 id="instruments-cheapest-first-count-probe-calls-in-the-ledger">Instruments, cheapest first (count probe calls in the ledger)</h2>
+<ol>
+<li><strong>Layer profile</strong> (no extra calls; from the fit capture): <a href="../cards/directions.html"><code>cards/directions.md</code></a> instruments. Output: the band where the difference appears and stabilizes.</li>
+<li><strong>Direction readout</strong> (no calls): push normalize(r̂_ℓ) through the final norm&#39;s scale and the unembedding; list the top and bottom tokens it promotes. A refusal direction promoting &quot;I&quot;, &quot;Sorry&quot;, &quot;cannot&quot; is a sanity check that you found the behaviour and not the topic.</li>
+<li><strong>Component attribution</strong> (1–2 calls): on fit prompts, decompose each layer&#39;s write along r̂ into per-head contributions (split <code>W_O</code> by head blocks) and per-neuron contributions (columns of <code>W_down</code> times activations). Rank components by (bad − good) contribution along r̂. Output: candidate heads and neuron columns.</li>
+<li><strong>Attention inspection on texts you write</strong> (2–6 calls): craft 8–16 short texts that isolate the cue the behaviour reacts to (the user&#39;s suggested answer for sycophancy; a harmful verb for refusal; a cliché trigger for slop), with matched controls. Record attention from the decision token for the candidate heads. A head whose attention to the cue differs sharply between conditions is a mechanism, not just a correlate (WSP Exp. 7: the sycophant&#39;s head 10.2 attended to the user&#39;s suggestion 85.7% vs 0.75%).</li>
+<li><strong>Matrix composition</strong> (no calls): for candidate heads, compose QK and OV circuits with earlier heads&#39; outputs, WSP Exp. 3 style, to check whether a candidate depends on an earlier component (a cue-detector head feeding a later writer).</li>
+<li><strong>Causal confirmation</strong> (2–6 calls): ablate the hypothesised components on probe prompts (project r̂ out of those heads or columns only, <a href="../cards/wsp-edit.html"><code>cards/wsp-edit.md</code></a>) and measure the behaviour meter and first-token KL. A hypothesis is confirmed when the targeted ablation reduces the behaviour by at least half of what a broad band ablation of the same direction achieves.</li>
+</ol>
+<p>On models too large to read (beyond a few billion parameters, or when weight tensors exceed what you can reason over), skip 5 and lean on 1–4 and 6: statistics computed in code, not reading.</p>
+<h2 id="the-feasibility-gate">The feasibility gate</h2>
+<table>
+<thead>
+<tr>
+<th>Verdict</th>
+<th>Evidence</th>
+<th>Next</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>switchable</strong></td>
+<td>a confirmed component set (step 6) removes ≥ 50% of the behaviour on probe at first-token KL inside the loosest tier</td>
+<td>Phase 3; the compiler favours sparse edits</td>
+</tr>
+<tr>
+<td><strong>diffuse</strong></td>
+<td>the difference is real (probe separability ≥ 0.75 in some band) but only broad edits move it</td>
+<td>Phase 3; the compiler favours ARA-family edits</td>
+</tr>
+<tr>
+<td><strong>absent</strong></td>
+<td>separability near chance everywhere and no ablation moves the behaviour; or the brief asks to <em>add</em> an ability</td>
+<td>stop; report what was measured</td>
+</tr>
+</tbody></table>
+<p>If the probe budget for mapping runs out before a verdict, the verdict is <strong>inconclusive</strong>: proceed as diffuse and say so.</p>
+<h2 id="map-report-map-report-md">Map report (<code>map/report.md</code>)</h2>
+<p>Hypotheses H1…Hn, each: the components, the evidence (numbers, prompt ids, figures), the confirmation result, confidence. Then the verdict with its evidence. The compiler cites hypothesis ids in its edit specs.</p>
+<h2 id="self-check">Self-check</h2>
+<p>Step 3&#39;s per-head contributions summed over heads must equal the layer&#39;s attention write along r̂, and per-neuron contributions summed must equal the MLP write, to a relative error below 1e-4 in float32 or 1e-2 when the model runs in bf16 or fp16. If they don&#39;t, the head split or the activation hook is wrong.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/reproducibility.html">← Workbench, pins, manifest, calibration</a><a href="../cards/wsp-edit.html">WSP-style weight edits →</a></nav>
+<a class="back" href="../../index.html#s7">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

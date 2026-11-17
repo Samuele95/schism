@@ -1,0 +1,26 @@
+{
+  "name": "schism-site",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "vite",
+    "read": "node scripts/build-read.mjs",
+    "build": "node scripts/build-read.mjs && vite build",
+    "preview": "vite preview --port 4173"
+  },
+  "author": "Samuele Stronati",
+  "license": "MIT",
+  "dependencies": {
+    "@fontsource/eb-garamond": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "gsap": "^3.15.1",
+    "lenis": "^1.3.27",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "marked": "^18.2.1",
+    "vite": "^8.3.8"
+  },
+  "private": true,
+  "type": "module",
+  "description": "The cinematic site and reading room for Schism."
+}

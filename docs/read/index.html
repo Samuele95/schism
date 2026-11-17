@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Schism — Schism reading room</title>
+<meta name="description" content="Schism reading room: Schism." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html" aria-current="page">Schism</a></li><li><a href="skill.html">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main">
+<p class="crumb">Overview</p>
+<h1>Schism</h1>
+<h2 id="in-one-sentence">In one sentence</h2>
+<p data-claim="C-01 C-05">Schism changes one behaviour of a language model while leaving the rest of it as it was, and proves both halves of that claim.</p>
+
+<h2 id="in-one-paragraph">In one paragraph</h2>
+<p data-claim="C-06 C-11 C-01 C-02 C-15 C-16 C-03 C-04">Schism is an agent skill: a method, written as technique cards and role prompts, that a capable LLM agent carries out itself. It contains no code; the agent implements each technique from its card, self-checks it, and keeps it for later runs. It targets one behaviour at a time, such as slop, sycophancy, verbosity, humor, tone or looping, either by editing an open model&#39;s weights or, on a closed model, by building a prompt operator measured in embedding space. The search for the edit runs as an Alchemist tournament, every prompt in a run is written through Prometheus, and results are judged once on a sealed vault against a baseline floor. It is for practitioners who want to remove, reduce or locate a behaviour (&quot;where does X live in this model&quot;) or steer a closed model&#39;s style; it is not for training or fine-tuning.</p>
+
+<h2 id="what-comes-back">What a run hands back</h2>
+<ul>
+<li data-claim="C-65 C-66"><strong>The report</strong> (<code>seal/report.md</code>): it leads with one sentence naming the chosen candidate, its vault behaviour score and preservation score, and how it compares with the floor; then the front; then the head-to-head against the floor; then what needs the user&#39;s attention: deviations, inconclusive gates, exhausted budgets, anything that leaked.</li>
+<li data-claim="C-31 C-54 C-17"><strong>The export</strong> (<code>exports/&lt;candidate-id&gt;/</code>): the chosen candidate, as merged weights or an adapter, always in a new folder, never the model&#39;s own. On the semantic branch the deliverable is an operator: &quot;this model with this operator&quot;.</li>
+<li data-claim="C-12 C-65"><strong>The ledger</strong> (<code>ledger.md</code>): the append-only record of the whole run: phases, hypotheses, budgets, deviations, decisions.</li>
+<li data-claim="C-55"><strong>The manifest</strong> (<code>seal/manifest.json</code>): what is needed to replay the run: brief, workbench file hashes, every front candidate&#39;s spec, vault scores, environment, file hashes.</li>
+<li data-claim="C-25">When the feasibility gate closes, the run hands back a report of what was measured and why the gate closed: &quot;a result, not a failure&quot;.</li>
+</ul>
+
+<h2 id="the-run">The run</h2>
+<p data-claim="C-20">Five phases.</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Purpose</th>
+<th>In</th>
+<th>Out</th>
+<th>Over when</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1 Frame</td>
+<td data-claim="C-21">Turn the behaviour into a run brief.</td>
+<td>the behaviour, the model</td>
+<td data-claim="C-21 C-22 C-51">brief.yaml: branch, model, contrast pair, four splits, meters, budgets, preservation tiers; behaviour and preservation rubrics from Prometheus; confound audit</td>
+<td data-claim="C-21">the brief is complete, the vault is sealed and hashed, the ledger holds the Frame entry; on present deployment the user confirms the brief</td>
+</tr>
+<tr>
+<td>2 Map</td>
+<td data-claim="C-24">Find where the behaviour lives, and whether there is anything to switch off.</td>
+<td data-claim="C-42">fit and probe splits; a mapping budget</td>
+<td data-claim="C-24 C-25"><code>map/report.md</code>: hypotheses with evidence, and a feasibility verdict</td>
+<td data-claim="C-25">a verdict: switchable or diffuse → Phase 3; absent → the run stops with a report; inconclusive → Phase 3 as diffuse</td>
+</tr>
+<tr>
+<td>3 Floor</td>
+<td data-claim="C-26">Run the baseline pipeline.</td>
+<td>the dev split, the standard meters</td>
+<td data-claim="C-26">Pareto trials; candidate zero; reference rates</td>
+<td data-claim="C-30">candidate zero is chosen and the behaviour target is fixed from it</td>
+</tr>
+<tr>
+<td>4 Tournament</td>
+<td data-claim="C-28">Search for a better candidate, tier by tier.</td>
+<td>candidate zero; the role prompts</td>
+<td data-claim="C-28">converged candidates (the front), or a proven barrier</td>
+<td data-claim="C-28">every tier converged, or a barrier stopped the ratchet</td>
+</tr>
+<tr>
+<td>5 Seal</td>
+<td data-claim="C-31">Score once on the vault and decide.</td>
+<td>the front; the sealed vault</td>
+<td data-claim="C-31">vault scores, head-to-head, report, manifest, export</td>
+<td data-claim="C-31">report, manifest and export exist and the ledger points to them</td>
+</tr>
+</tbody></table>
+
+<h2 id="the-family">The family</h2>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Owns</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Schism</td>
+<td data-claim="C-13">the method: technique cards, contrast design, the map, the feasibility gate, the floor, the vault, the front, the ledger, export</td>
+</tr>
+<tr>
+<td>Alchemist (required)</td>
+<td data-claim="C-13">the search: compiler → isolated testers → judge with history, to convergence or a proven barrier</td>
+</tr>
+<tr>
+<td>Prometheus (required)</td>
+<td data-claim="C-13 C-14">every prompt: rubrics, role prompts, operator candidates</td>
+</tr>
+<tr>
+<td>WSP — Weight Space Programming (optional)</td>
+<td data-claim="C-13">general weight reading and writing, when installed</td>
+</tr>
+</tbody></table>
+
+<h2 id="get-it">Get it</h2>
+<p data-claim="C-73">Schism lives at <a href="https://github.com/Samuele95/schism">github.com/Samuele95/schism</a>, under the MIT licence, by Samuele Stronati. Install the <code>schism/</code> folder next to Alchemist and <a href="https://github.com/Samuele95/prometheus">Prometheus</a>; <a href="install.html">install and run</a> has the details.</p>
+<h2 id="contents">In the reading room</h2>
+<ul class="contents"><li><a href="skill.html">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html">Coordination</a></li><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li><li><a href="install.html">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<nav class="pn" aria-label="Previous and next"><span></span><a href="skill.html">The skill →</a></nav>
+<a class="back" href="../index.html#s1">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

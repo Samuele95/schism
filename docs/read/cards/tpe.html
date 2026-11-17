@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Multi-objective TPE — Schism reading room</title>
+<meta name="description" content="Schism reading room: Multi-objective TPE." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html" aria-current="page">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/tpe.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/tpe.md"><code>schism/cards/tpe.md</code></a>, as written.</p>
+<h1 id="card-multi-objective-tpe">Card — Multi-objective TPE</h1>
+<p><strong>What it buys.</strong> The search engine, used twice in Schism: to build the floor (Phase 3), and as a move the compiler may make for numeric knobs inside a tournament iteration.</p>
+<h2 id="setup">Setup</h2>
+<pre><code class="language-python">optuna.create_study(
+    directions=[&quot;minimize&quot;, &quot;minimize&quot;],          # behaviour meter, preservation meter (order = report order)
+    sampler=optuna.samplers.TPESampler(
+        n_startup_trials=30, n_ei_candidates=128, multivariate=True, seed=&lt;run seed&gt;),
+    storage=JournalStorage(JournalFileBackend(&quot;floor/study.jsonl&quot;)))   # JournalFileStorage on Optuna &lt; 4
+study.optimize(objective, n_trials=100)
+</code></pre>
+<p>Each trial: reset (<a href="../cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a>) → apply the knobs → meters on the dev split. Store parameters and every meter value as trial attributes. The Pareto front is <code>study.best_trials</code> (no other trial is at least as good on every objective and better on one); sort it by objective values in order. No weighted sum.</p>
+<h2 id="how-tpe-chooses">How TPE chooses</h2>
+<p>The first 30 trials sample uniformly. Then TPE splits finished trials into a good group (roughly the top tenth; with two objectives, by non-domination rank then contribution to the front) and the rest, fits kernel densities ℓ(x) to the good group and g(x) to the rest, draws 128 candidates from ℓ and runs the one with the highest ℓ(x)/g(x). Thirty random trials first, because densities fitted to three points lock the search onto its first lucky region.</p>
+<h2 id="shape-the-search-space-for-multivariate-tpe">Shape the search space for multivariate TPE</h2>
+<p>Multivariate TPE models jointly only parameters present in every trial with the same fixed distribution; everything else falls back to independent sampling and loses the joint model. Hence these odd-looking choices, which you keep:</p>
+<table>
+<thead>
+<tr>
+<th>Natural</th>
+<th>Shaped</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>sample <code>direction_index</code> only when global</td>
+<td>always sample it; ignore it when per layer</td>
+</tr>
+<tr>
+<td><code>min_weight ∈ [0, max_weight]</code></td>
+<td><code>min_weight ∈ [0, 1]</code>, multiply by max_weight after</td>
+</tr>
+<tr>
+<td><code>end ∈ [start+1, L]</code></td>
+<td><code>start ∈ [0, L/2]</code>, <code>end ∈ [L/2+1, L]</code></td>
+</tr>
+<tr>
+<td>a separate &quot;MLP on/off&quot; choice</td>
+<td><code>max_weight ∈ [−0.25, 1.5]</code>, clamp at 0</td>
+</tr>
+<tr>
+<td>a weight in [1e-4, 1] uniform</td>
+<td><code>log=True</code></td>
+</tr>
+</tbody></table>
+<h2 id="as-a-compiler-move">As a compiler move</h2>
+<p>Inside an iteration, the compiler may run a small TPE (≤ 20 trials, 6 start-up) on the <strong>probe</strong> split over 2–4 knobs of a technique it has already chosen, counting each trial as one probe call. It submits the best probe trial as its candidate. Never on dev: that would let the compiler see what the testers see.</p>
+<h2 id="resume-and-interruption">Resume and interruption</h2>
+<p>The journal file is written after every trial. On interruption, mark the running trial pruned; on restart, load the study from the journal and continue. Store the brief&#39;s hash in the study&#39;s user attributes and refuse to resume a study whose brief changed.</p>
+<h2 id="self-check">Self-check</h2>
+<p>Run 20 trials on a toy two-objective function of two parameters with a known Pareto front; the reported best trials must all be non-dominated, and a second run with the same seed must propose the same 20 parameter sets.</p>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/llm-judges.html">← LLM judges and strict testers</a><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

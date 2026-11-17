@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WSP-style weight edits — Schism reading room</title>
+<meta name="description" content="Schism reading room: WSP-style weight edits." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html" aria-current="page">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/wsp-edit.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/wsp-edit.md"><code>schism/cards/wsp-edit.md</code></a>, as written.</p>
+<h1 id="card-wsp-style-weight-edits">Card — WSP-style weight edits</h1>
+<p><strong>What it buys.</strong> Edits narrower than a layer band, for behaviours the map localised: fewer weights changed, less collateral damage, and a protocol for improving an edit with a budget of forward passes.</p>
+<h2 id="sparse-direction-surgery">Sparse direction surgery</h2>
+<p>Restrict the projection to a set S of components the map confirmed:</p>
+<ul>
+<li><strong>Neuron columns</strong> of <code>W_down</code> (WSP&#39;s Qwen fix): for columns j ∈ S, <code>W[:, j] −= λ · v (vᵀ W[:, j])</code>. As a LoRA: rank 1, B = −λv, A = (vᵀW) masked to zero outside S.</li>
+<li><strong>Attention heads:</strong> apply the same to the column block of <code>W_O</code> that belongs to each head in S (columns h·d_head … (h+1)·d_head − 1).</li>
+<li><strong>Several layers:</strong> one rank-1 slot per layer, each with its own λ and its own S.</li>
+</ul>
+<p>Record the fraction of model weights changed; it is part of the result.</p>
+<h2 id="side-path-experimental">Side path (experimental)</h2>
+<p>For a behaviour triggered by a detectable cue, add a gated correction instead of a permanent projection (WSP Exp. 4 added a small side path that switched itself off once its job was done). In a gated MLP: pick k neurons with the lowest activation on both conditions in a chosen layer; set their gate and up rows to read a detector direction d̂ (the cue direction from the map, read from Norm(h)); set their <code>W_down</code> columns to write −α·v. On good prompts the gate stays near zero, so the correction is near zero. This edits <code>gate_proj</code>, <code>up_proj</code> and <code>down_proj</code> rows and columns, so it is stored as a separate delta (dense, sparse), not a LoRA on writers: keep a CPU snapshot of the original rows and columns, apply with <code>copy_</code>, revert with <code>copy_</code>. Record that a non-writer edit was used.</p>
+<h2 id="keep-if-better-under-a-budget">Keep-if-better under a budget</h2>
+<p>WSP&#39;s 50-pass result came from interleaving edits with measurements and keeping only improvements:</p>
+<pre><code>repeat until probe budget for this iteration is spent:
+    propose one change (layer, set S, λ, α, technique)
+    apply → measure the behaviour meter on probe bad-condition prompts + first-token KL on probe-neutral prompts (1 call)
+    if behaviour improved and KL stayed inside the iteration&#39;s preservation target: keep
+    else: revert
+    log: change, measurements, kept/reverted
+submit the kept state as the candidate edit spec
+</code></pre>
+<p>Probe split only: the testers judge on dev, and a compiler that measures on dev would see what the testers see.</p>
+<h2 id="combining-with-the-standard-modifiers">Combining with the standard modifiers</h2>
+<p>A composite candidate is allowed: for example ARA on a band plus sparse surgery outside it. Apply in a stated order and record it; the bench applies the same order.</p>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Sparse surgery with S = all columns must reproduce the full directional ablation of <a href="../cards/directional-ablation.html"><code>cards/directional-ablation.md</code></a> (mode none) exactly.</li>
+<li>Columns outside S are bit-identical before and after.</li>
+<li>Side path: on 10 good probe prompts, the side-path neurons&#39; activations stay below 5% of their activation on bad probe prompts; otherwise the gate does not gate.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/feasibility-and-locate.html">← Locating a behaviour, and the feasibility gate</a><a href="../cards/semantic-branch.html">The semantic branch →</a></nav>
+<a class="back" href="../../index.html">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

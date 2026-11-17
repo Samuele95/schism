@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Schism — decide what your model stops doing</title>
+    <meta name="description" content="Schism splits one behaviour off a language model — sycophancy, slop, looping — leaves the rest as it was, and proves both." />
+    <meta name="theme-color" content="#050506" />
+    <meta property="og:title" content="Schism" />
+    <meta property="og:description" content="Decide what your model stops doing. Prove the rest held." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="stills/S9.webp" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <canvas id="gl" aria-hidden="true"></canvas>
+
+    <nav class="phases" id="phases" aria-hidden="true">
+      <span data-phase="1">I</span><span data-phase="2">II</span><span data-phase="3">III</span><span data-phase="4">IV</span><span data-phase="5">V</span>
+    </nav>
+
+    <a class="skip" href="read/index.html">Skip the film — read the method</a>
+
+    <div id="scenes">
+      <!-- S1 -->
+      <section class="scene" id="s1" data-start="0" data-end="8" aria-label="The title">
+        <img class="still" src="stills/S1.webp" alt="The word SCHISM in engraved capitals over falling columns of green glyphs." loading="lazy" />
+        <header class="title-block" data-t="0,4">
+          <h1 class="title">SCHISM</h1>
+          <p class="sub" data-lore="L-1"><span lang="grc">σχίσμα</span> — a cleft, a division</p>
+        </header>
+        <a class="read" href="read/index.html" data-t="0,7">read: overview →</a>
+      </section>
+
+      <!-- S2 -->
+      <section class="scene" id="s2" data-start="8" data-end="22" aria-label="The matter">
+        <img class="still" src="stills/S2.webp" alt="A wide weight matrix of green digits between engraved brackets." loading="lazy" />
+        <p class="line" data-t="11,20" data-claim="C-01">One set of weights. More than one personality.<br /><em>The flatterer. The rambler. The one that loops.</em></p>
+        <pre class="readout" data-t="14,20"><span data-claim="C-01">&gt; slop · sycophancy · verbosity · humor · tone · looping</span></pre>
+        <a class="read" href="read/index.html" data-t="11,20">read: overview →</a>
+      </section>
+
+      <!-- S3 -->
+      <section class="scene" id="s3" data-start="22" data-end="34" aria-label="The promise">
+        <img class="still" src="stills/S3.webp" alt="A vast cloud of pale points: a flat disc with a plume rising from it." loading="lazy" />
+        <p class="line" data-t="25,33" data-claim="C-05">Schism splits one of them off.<br /><em>Everything else is left as it was — and it proves both.</em></p>
+        <a class="read" href="read/index.html" data-t="25,33">read: overview →</a>
+      </section>
+
+      <!-- S4 -->
+      <section class="scene" id="s4" data-start="34" data-end="44" aria-label="What comes back">
+        <img class="still" src="stills/S4.webp" alt="The space of points with a green terminal read-out listing three files." loading="lazy" />
+        <p class="line" data-t="35,43" data-claim="C-65 C-12">Every operation is on the record.</p>
+        <pre class="readout" data-t="36,43"><span data-claim="C-66">&gt; seal/report.md        the outcome, in its first sentence</span>
+<span data-claim="C-31 C-54">&gt; exports/&lt;candidate&gt;/  the edit, in a new folder</span>
+<span data-claim="C-12">&gt; ledger.md            everything the run did, in order</span></pre>
+        <a class="read" href="read/index.html#what-comes-back" data-t="35,43">read: what a run hands back →</a>
+      </section>
+
+      <!-- S5 -->
+      <section class="scene" id="s5" data-start="44" data-end="58" aria-label="Two branches">
+        <img class="still" src="stills/S5.webp" alt="A veil of fine vertical threads across the space; on the near side the points are digits." loading="lazy" />
+        <p class="line" data-t="45,49.5" data-claim="C-15">Open weights: operate on the matrices themselves.</p>
+        <p class="line" data-t="49.5,54" data-claim="C-16">Closed models: no blade reaches the weights.<br /><em>The incision is made in language — an operator, measured on the geometry of its answers.</em></p>
+        <p class="line" data-t="54,57.5" data-claim="C-17">The model is never changed.<br /><em>Only its answers move — under this operator.</em></p>
+        <p class="lore" data-t="46,57" data-lore="L-3">Tradition holds that some heard Pythagoras from beyond a veil, and never saw him.</p>
+        <a class="read" href="read/branches.html" data-t="45,57.5">read: two branches →</a>
+      </section>
+
+      <!-- S6 -->
+      <section class="scene" id="s6" data-start="58" data-end="70" aria-label="Phase one, Frame">
+        <img class="still" src="stills/S6.webp" alt="An engraved letter Y through the disc and the plume; a small sphere sealed in red beside them." loading="lazy" />
+        <h2 class="rubric" data-t="58,69.5">I · Frame</h2>
+        <p class="line" data-t="59,62.5" data-claim="C-22">Name the personality you want gone.<br /><em>Show it. Then show its absence.</em></p>
+        <p class="line" data-t="62.5,65.5" data-claim="C-51">Choose the prompts,<br /><em>and you have defined what will be cut.</em></p>
+        <p class="line" data-t="65.5,69.5" data-claim="C-08 C-09 C-21">Seal a sample away<br /><em>before anything is touched.</em></p>
+        <p class="lore" data-t="60,69" data-lore="L-4">The Samian letter: one stem, two paths.</p>
+        <p class="read" data-t="59,69.5">read: <a href="read/run.html#phase-1-frame">phase I</a> · <a href="read/cards/contrast-design.html">contrast design</a> →</p>
+      </section>
+
+      <!-- S7 -->
+      <section class="scene" id="s7" data-start="70" data-end="90" aria-label="Phase two, Map">
+        <img class="still" src="stills/S7.webp" alt="Three engraved rings around the space; a red axis runs through two marked means." loading="lazy" />
+        <h2 class="rubric" data-t="70,89.5">II · Map</h2>
+        <p class="line" data-t="72,78" data-claim="C-24">Locate it.<br /><em>Map where it lives inside the model.</em></p>
+        <p class="line" data-t="78,84.5" data-claim="C-25">If it lives nowhere,<br /><em>the operation is called off — and the record says why.</em></p>
+        <pre class="readout" data-t="72,88"><span data-claim="C-59 C-08">&gt; capture   decision token · fit split</span>
+<span data-claim="C-46">&gt; means     μ_bad · μ_good   per layer</span>
+<span data-claim="C-46">&gt; axis      r̂ = normalize(μ_bad − μ_good)</span>
+<span data-claim="C-24">&gt; readout   promotes · suppresses</span>
+<span data-claim="C-25">&gt; gate      switchable</span></pre>
+        <p class="lore" data-t="74,88" data-lore="L-5">The armillary: a skeleton sphere of great circles, divided into degrees.</p>
+        <a class="read" href="read/cards/feasibility-and-locate.html" data-t="72,88">read: locating a behaviour →</a>
+      </section>
+
+      <!-- S8 -->
+      <section class="scene" id="s8" data-start="90" data-end="98" aria-label="Phase three, Floor">
+        <img class="still" src="stills/S8.webp" alt="A dashed engraved ring sweeps down along the red axis through the plume, toward the disc." loading="lazy" />
+        <h2 class="rubric" data-t="90,97.8">III · Floor</h2>
+        <p class="line" data-t="90.5,94.5" data-claim="C-26">The standard procedure goes first, searched in full.<br /><em>Its best result is candidate zero.</em></p>
+        <p class="line" data-t="94.5,97.8" data-claim="C-27">It sets the mark.<br /><em>Schism starts from it — and can only match it or go&nbsp;further.</em></p>
+        <pre class="readout" data-t="93,97.8"><span data-claim="C-26">&gt; floor     candidate zero</span></pre>
+        <a class="read" href="read/cards/floor-and-front.html" data-t="90.5,97.8">read: the floor →</a>
+      </section>
+
+      <!-- S9 -->
+      <section class="scene" id="s9" data-start="98" data-end="132" aria-label="Phase four, Tournament">
+        <img class="still" src="stills/S9.webp" alt="The held cut: a red plume suspended above a white disc, the red rod severed at the blade's edge, four green marks around it." loading="lazy" />
+        <h2 class="rubric" data-t="98,131.5">IV · Tournament</h2>
+        <div class="line left" data-t="103,110.5" data-claim="C-45">
+          <p>Sever one direction. Nothing else.</p>
+          <p class="formula" aria-label="W prime equals W minus lambda times v times v-transpose W">W′ = W − λ · v (vᵀW)</p>
+        </div>
+        <p class="line left" data-t="111,118" data-claim="C-37 C-38">Four examiners, kept apart, each test one thing.<br /><em>A judge reads every verdict and the whole history — and orders one fix.</em></p>
+        <p class="line left" data-t="118.5,124" data-claim="C-36">The hand that cuts never sees a verdict.<br /><em>Only the next instruction.</em></p>
+        <p class="line left" data-t="124.5,131" data-claim="C-13 C-14">Alchemist runs the operation.<br /><em>Prometheus writes every prompt in it.</em></p>
+        <pre class="readout" data-t="112,129"><span data-claim="C-37 C-50">&gt; T1 behaviour   T2 preservation</span>
+<span data-claim="C-37 C-50">&gt; T3 capability  T4 Goodhart</span>
+<span data-claim="C-38">&gt; judge          every verdict · whole history</span></pre>
+        <a class="read" href="read/coordination.html" data-t="103,131">read: the tournament →</a>
+      </section>
+
+      <!-- S10 -->
+      <section class="scene" id="s10" data-start="132" data-end="146" aria-label="The collapse">
+        <img class="still" src="stills/S10.webp" alt="The flat disc inside an engraved ring; the plume is gone." loading="lazy" />
+        <p class="line" data-t="136,145.5" data-claim="C-05 C-48">What was cut falls away.<br /><em>What was not must not move — and that is measured, not assumed.</em></p>
+        <a class="read" href="read/cards/directional-ablation.html" data-t="136,145.5">read: the edit →</a>
+      </section>
+
+      <!-- S11 -->
+      <section class="scene" id="s11" data-start="146" data-end="154" aria-label="The gloss">
+        <img class="still" src="stills/S11.webp" alt="A faint outline of the original plume stands above the flat disc." loading="lazy" />
+        <p class="line" data-t="147,150.5" data-claim="C-07 C-54">Nothing is overwritten.<br /><em>The edit lives beside the weights — and comes out clean.</em></p>
+        <p class="line" data-t="150.5,153.8" data-claim="C-07">The original model<br /><em>is the measure of everything.</em></p>
+        <p class="lore" data-t="148,153.8" data-lore="L-2">A gloss is written beside the text. The text stays as it was.</p>
+        <a class="read" href="read/cards/lora-lifecycle.html" data-t="147,153.8">read: adapters →</a>
+      </section>
+
+      <!-- S12 -->
+      <section class="scene" id="s12" data-start="154" data-end="170" aria-label="Phase five, Seal">
+        <img class="still" src="stills/S12.webp" alt="A red seal breaking into digits; a green grid of labels with empty intervals." loading="lazy" />
+        <h2 class="rubric" data-t="154,169.5">V · Seal</h2>
+        <p class="line" data-t="157,161" data-claim="C-09 C-32">Sealed before the first incision. <em>Opened once.</em></p>
+        <p class="line" data-t="161,165" data-claim="C-34">Every number that chose a candidate flatters it.<br /><em>These prompts chose nothing.</em></p>
+        <p class="line" data-t="165,169.5" data-claim="C-33">If it only matches the standard procedure,<br /><em>at a higher cost, that is the result — and it is&nbsp;reported.</em></p>
+        <pre class="readout" data-t="159,169"><span data-claim="C-32">&gt; vault     hash checked · opened once</span>
+<span data-claim="C-31 C-33">&gt; floor vs tournament</span>
+<span data-claim="C-31 C-33">&gt;   behaviour     [ · , · ]</span>
+<span data-claim="C-31 C-33">&gt;   preservation  [ · , · ]</span></pre>
+        <p class="lore" data-t="156,168" data-lore="L-7">A seal shows whether a letter was opened. It can be broken only once.</p>
+        <a class="read" href="read/cards/floor-and-front.html" data-t="157,169.5">read: the vault →</a>
+      </section>
+
+      <!-- S13 -->
+      <section class="scene" id="s13" data-start="170" data-end="184" aria-label="The ending">
+        <img class="still" src="stills/S13.webp" alt="A small ring of light among stars, with a hairline gap." loading="lazy" />
+        <div class="ending" data-t="174">
+          <p class="title small">SCHISM</p>
+          <p class="end-line" data-claim="C-05">Decide what your model stops doing. <em>Prove&nbsp;the&nbsp;rest&nbsp;held.</em></p>
+          <a class="cta" href="read/index.html">Read the method →</a>
+          <p class="end-small" data-claim="C-13">Works with Alchemist and Prometheus.</p>
+          <p class="end-small" data-claim="C-73"><a href="https://github.com/Samuele95/schism">github.com/Samuele95/schism</a> · MIT · Samuele Stronati</p>
+        </div>
+      </section>
+    </div>
+
+    <div id="labels" aria-hidden="true">
+      <span class="mu" id="muGood">μ good</span>
+      <span class="mu bad" id="muBad">μ bad</span>
+      <span class="tlabel" data-k="0">T1</span><span class="tlabel" data-k="1">T2</span><span class="tlabel" data-k="2">T3</span><span class="tlabel" data-k="3">T4</span>
+      <span class="tlabel judge" data-k="4">judge</span>
+    </div>
+
+    <p class="hint" id="hint" aria-hidden="true">scroll</p>
+    <button class="sound" id="sound" type="button" aria-pressed="false">sound off</button>
+
+    <main id="film" aria-hidden="true"></main>
+    <div id="debug" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

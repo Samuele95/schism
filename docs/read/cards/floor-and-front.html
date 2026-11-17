@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Floor, tiers, front, vault, head-to-head — Schism reading room</title>
+<meta name="description" content="Schism reading room: Floor, tiers, front, vault, head-to-head." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="../read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../../stills/S9.webp)">
+<a class="home" href="../index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="../index.html">Schism</a></li><li><a href="../skill.html">The skill</a></li><li><a href="../run.html">The run, phase by phase</a></li><li><a href="../branches.html">Two branches</a></li><li><a href="../coordination.html">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="../cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="../cards/response-prefix.html">Response prefix</a></li><li><a href="../cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="../cards/directions.html">Directions</a></li><li><a href="../cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="../cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="../cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="../cards/meters.html">Standard meters</a></li><li><a href="../cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="../cards/tpe.html">Multi-objective TPE</a></li><li><a href="../cards/floor-and-front.html" aria-current="page">Floor, tiers, front, vault, head-to-head</a></li><li><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="../cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="../cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="../cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="../roles/cartographer.html">Cartographer</a></li><li><a href="../roles/smith.html">Smith</a></li><li><a href="../roles/operator-compiler.html">Operator compiler</a></li><li><a href="../roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="../roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="../roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="../roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="../roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="../install.html">Install and run</a></li><li><a href="../glossary.html">Glossary</a></li></ul>
+<a class="film" href="../../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/cards/floor-and-front.md">
+<p class="crumb">Technique card</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/floor-and-front.md"><code>schism/cards/floor-and-front.md</code></a>, as written.</p>
+<h1 id="card-floor-tiers-front-vault-head-to-head">Card — Floor, tiers, front, vault, head-to-head</h1>
+<p><strong>What it buys.</strong> The two guarantees that make &quot;better than the baseline&quot; a measured claim: the tournament starts from the baseline&#39;s result, and every claim is scored once on prompts no decision ever touched.</p>
+<h2 id="floor-phase-3">Floor (Phase 3)</h2>
+<p>Candidate zero is the baseline run done by you from the cards: the brief&#39;s modifier (ARA by default), the standard search ranges, multi-objective TPE with the standard settings, the standard meters, on the dev split. The tournament can therefore only match or improve it; in the worst case Schism returns the baseline answer with better measurement. On the semantic branch the floor is the good-condition instruction used verbatim as the operator: the honest baseline for &quot;can an optimized operator beat just asking?&quot;.</p>
+<h2 id="tiers-and-the-ratchet-phase-4">Tiers and the ratchet (Phase 4)</h2>
+<p>A tier is a preservation threshold (default first-token KL ≤ 0.40, 0.20, 0.10). Each tier is one Alchemist run with <code>halt: all_pass</code>, seeded with the best candidate so far. Converged → the candidate joins the front and seeds the next, tighter tier. A proven barrier → stop: the previous tier is the tightest this model, behaviour and budget support. The behaviour target stays fixed (candidate zero&#39;s dev rate unless the brief is stricter), so the ratchet buys preservation at equal removal, the axis where the baseline front is usually weakest.</p>
+<h2 id="front">Front</h2>
+<p>The front is the union of the floor&#39;s Pareto trials and the tournament&#39;s converged candidates, reduced to the non-dominated set on (behaviour, preservation) after the vault pass. Report capability and weights changed alongside each point; let them break ties.</p>
+<h2 id="vault-and-the-winner-39-s-curse">Vault and the winner&#39;s curse</h2>
+<p>Every score used to pick a candidate is biased in that candidate&#39;s favour: among many candidates of similar true quality, the one that did best on these particular prompts gets picked. With 100 trials and 100 prompts the picked trial&#39;s reported rate can be several points per hundred better than its true rate, and the gap grows with the number of candidates and shrinks with the number of prompts. The vault removes this: sealed in Phase 1, opened once in Phase 5, every front member scored in one pass, nothing changed afterwards. If any vault content or score leaked earlier, report all scores as dev scores.</p>
+<h2 id="head-to-head-phase-5">Head-to-head (Phase 5)</h2>
+<p>Compare the best floor trial and the best tournament candidate at each tier, on vault scores:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Floor (baseline)</th>
+<th>Schism, tier k</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>behaviour (keyword meter)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>behaviour (LLM judge)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>preservation (KL / drift)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>capability (benchmark slice, full task)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>weights changed / operator tokens</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>cost: GPU hours, model tokens, probe calls</td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Call a difference real only if it exceeds the vault&#39;s sampling noise: for a rate p on n prompts, report a 95% Wilson interval; for mean KL or drift, a 95% bootstrap interval over prompts (2 000 resamples, seeded); say &quot;no measurable difference&quot; when intervals overlap. A Schism result that matches the floor at higher cost is a valid, reportable outcome.</p>
+<h2 id="self-check">Self-check</h2>
+<ol>
+<li>Wilson interval for 5 of 100 at 95%: [0.0215, 0.1118] (to 4 decimals).</li>
+<li>Pareto reduction on the toy set {(0.1, 0.5), (0.2, 0.2), (0.3, 0.1), (0.25, 0.3), (0.1, 0.6)} (both minimized) returns exactly {(0.1, 0.5), (0.2, 0.2), (0.3, 0.1)}.</li>
+<li>The bootstrap interval of a constant sample has zero width; the same seed gives the same interval twice.</li>
+</ol>
+
+<nav class="pn" aria-label="Previous and next"><a href="../cards/tpe.html">← Multi-objective TPE</a><a href="../cards/reproducibility.html">Workbench, pins, manifest, calibration →</a></nav>
+<a class="back" href="../../index.html#s8">← back to the film</a>
+</main>
+</div>
+</body>
+</html>

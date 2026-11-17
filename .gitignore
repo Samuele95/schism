@@ -1,0 +1,14 @@
+# site build
+site/node_modules/
+site/public/read/
+
+# a Schism run's working files, if you run it from a clone
+runs/
+workbench/
+
+# editors and OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
+__pycache__/

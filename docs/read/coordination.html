@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Coordination — Schism reading room</title>
+<meta name="description" content="Schism reading room: Coordination." />
+<meta name="theme-color" content="#050506" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="read.css" />
+</head>
+<body>
+<a class="skip" href="#main">Skip to the text</a>
+<header class="banner" style="background-image:url(../stills/S9.webp)">
+<a class="home" href="index.html">SCHISM</a><span class="kicker">reading room</span>
+</header>
+<div class="layout">
+<nav class="toc" aria-label="Reading room"><details open><summary>Contents</summary>
+<ul><li><a href="index.html">Schism</a></li><li><a href="skill.html">The skill</a></li><li><a href="run.html">The run, phase by phase</a></li><li><a href="branches.html">Two branches</a></li><li><a href="coordination.html" aria-current="page">Coordination</a></li></ul>
+<p class="group">Technique cards</p><ul><li><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture</a></li><li><a href="cards/response-prefix.html">Response prefix</a></li><li><a href="cards/contrast-design.html">Contrast design, presets and splits</a></li><li><a href="cards/directions.html">Directions</a></li><li><a href="cards/directional-ablation.html">Directional ablation and MPOA</a></li><li><a href="cards/ara.html">ARA: Arbitrary-Rank Ablation</a></li><li><a href="cards/lora-lifecycle.html">LoRA lifecycle</a></li><li><a href="cards/meters.html">Standard meters</a></li><li><a href="cards/llm-judges.html">LLM judges and strict testers</a></li><li><a href="cards/tpe.html">Multi-objective TPE</a></li><li><a href="cards/floor-and-front.html">Floor, tiers, front, vault, head-to-head</a></li><li><a href="cards/reproducibility.html">Workbench, pins, manifest, calibration</a></li><li><a href="cards/feasibility-and-locate.html">Locating a behaviour, and the feasibility gate</a></li><li><a href="cards/wsp-edit.html">WSP-style weight edits</a></li><li><a href="cards/semantic-branch.html">The semantic branch</a></li></ul>
+<p class="group">Roles</p><ul><li><a href="roles/cartographer.html">Cartographer</a></li><li><a href="roles/smith.html">Smith</a></li><li><a href="roles/operator-compiler.html">Operator compiler</a></li><li><a href="roles/tester-behaviour.html">Behaviour tester (T1)</a></li><li><a href="roles/tester-preservation.html">Preservation tester (T2)</a></li><li><a href="roles/tester-capability.html">Capability tester (T3)</a></li><li><a href="roles/tester-goodhart.html">Goodhart tester (T4)</a></li><li><a href="roles/arbiter.html">Arbiter</a></li></ul>
+<p class="group">Using it</p><ul><li><a href="install.html">Install and run</a></li><li><a href="glossary.html">Glossary</a></li></ul>
+<a class="film" href="../index.html">← the film</a>
+</details></nav>
+<script>if (matchMedia('(max-width: 800px)').matches) document.querySelector('.toc details').removeAttribute('open');</script>
+<main id="main" data-source="schism/references/coordination.md">
+<p class="crumb">The tournament</p>
+<p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/references/coordination.md"><code>schism/references/coordination.md</code></a>, as written.</p>
+<h1 id="coordination-roles-contracts-information-flow">Coordination — roles, contracts, information flow</h1>
+<p>Phase 4 is an Alchemist tournament (evaluator-optimizer topology with sectioned evaluators). Alchemist owns the loop and its invariants I1–I5; this document is the Schism-specific wiring Alchemist needs: what a candidate is, how it becomes something testable, what each role sees, and what each returns.</p>
+<h2 id="roster">Roster</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Alchemist slot</th>
+<th>Prompt</th>
+<th>Sees</th>
+<th>Writes</th>
+<th>Model</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cartographer</td>
+<td>— (Phase 2 only)</td>
+<td><a href="roles/cartographer.html"><code>roles/cartographer.md</code></a></td>
+<td>brief&#39;s behaviour, branch, model, contrast blocks only; fit + probe splits (incl. probe-neutral); never judges, rubrics, dev, vault or tournament blocks</td>
+<td><code>map/</code></td>
+<td>frontier</td>
+</tr>
+<tr>
+<td>Smith</td>
+<td>compiler (weights)</td>
+<td><a href="roles/smith.html"><code>roles/smith.md</code></a></td>
+<td>P (its slots, filled from the brief), map, cards, probe split, fixes H</td>
+<td>candidate edit spec</td>
+<td>frontier</td>
+</tr>
+<tr>
+<td>Operator compiler</td>
+<td>compiler (semantic)</td>
+<td><a href="roles/operator-compiler.html"><code>roles/operator-compiler.md</code></a></td>
+<td>P (its slots, filled from the brief), map, probe split, fixes H</td>
+<td>candidate operator spec</td>
+<td>frontier, via Prometheus</td>
+</tr>
+<tr>
+<td>Behaviour tester</td>
+<td>tester T1</td>
+<td><a href="roles/tester-behaviour.html"><code>roles/tester-behaviour.md</code></a></td>
+<td>its projection only</td>
+<td>verdict</td>
+<td>any; local allowed</td>
+</tr>
+<tr>
+<td>Preservation tester</td>
+<td>tester T2</td>
+<td><a href="roles/tester-preservation.html"><code>roles/tester-preservation.md</code></a></td>
+<td>its projection only</td>
+<td>verdict</td>
+<td>any; local allowed</td>
+</tr>
+<tr>
+<td>Capability tester</td>
+<td>tester T3</td>
+<td><a href="roles/tester-capability.html"><code>roles/tester-capability.md</code></a></td>
+<td>its projection only</td>
+<td>verdict</td>
+<td>any; local allowed</td>
+</tr>
+<tr>
+<td>Goodhart tester</td>
+<td>tester T4 (full projection)</td>
+<td><a href="roles/tester-goodhart.html"><code>roles/tester-goodhart.md</code></a></td>
+<td>the whole bundle</td>
+<td>verdict</td>
+<td>frontier preferred</td>
+</tr>
+<tr>
+<td>Arbiter</td>
+<td>judge</td>
+<td><a href="roles/arbiter.html"><code>roles/arbiter.md</code></a></td>
+<td>verdicts + full H table + current candidate spec (stripped of probe_evidence and predicted numbers) + map SUMMARY/Hn/BAND/READOUT blocks; never bundles or raw responses</td>
+<td>diagnosis + one fix</td>
+<td>frontier</td>
+</tr>
+<tr>
+<td>You (orchestrator)</td>
+<td>orchestrator</td>
+<td>SKILL.md</td>
+<td>everything</td>
+<td>ledger, bench, run folder</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p><strong>Scope lockdown.</strong> The Cartographer receives only the brief&#39;s <code>behaviour</code>, <code>branch</code>, <code>model</code> and <code>contrast</code> blocks; it never sees <code>judges</code>, <code>floor</code>, <code>tournament</code>, rubric files, <code>dev.jsonl</code> or <code>vault.*</code>, because the map feeds the compilers and anything the Cartographer sees leaks there. The Smith and the operator compiler change only the scratch copy and write only to <code>tiers/tier-k/candidates/</code>; they never read <code>dev.jsonl</code>, <code>vault.*</code>, any bundle, the brief itself, rubric files, <code>tiers/tier-k/H-ledger.md</code> (which carries T1–T4 verdicts), or <code>floor/</code> (the TPE journal stores dev meter values as trial attributes). You fill their P slots from the brief; the brief&#39;s <code>judges</code> and <code>splits</code> blocks hold the testers&#39; criteria, and a compiler that reads them fits to the judge. The starting-point spec handed to the compiler carries no dev scores (strip <code>probe_evidence</code> numbers and <code>predicted</code> numbers before handing it over). Testers read only the files you hand them and write nothing. The Arbiter sees the candidate spec (stripped of <code>probe_evidence</code> and <code>predicted</code> numbers) and the map SUMMARY block, but never bundles, raw responses, rubric files or dev data. The Cartographer is read-only on the model. You never edit a candidate yourself: a candidate you &quot;fix&quot; between compiler and testers is a fifth author no ledger accounts for.</p>
+<p><strong>Judge independence.</strong> Where two models are available, run the testers on a different model from the compiler. A compiler and a tester that share a model share blind spots, and the tester stops being an outside observer.</p>
+<h2 id="information-flow-one-iteration">Information flow, one iteration</h2>
+<pre><code>fixes H ──► compiler ──► candidate spec ──► BENCH (you, mechanical) ──► bundle
+                                                                          │
+              ┌───────────────┬───────────────┬───────────────────────────┤
+              ▼               ▼               ▼                           ▼
+        T1 behaviour    T2 preservation  T3 capability            T4 Goodhart (full)
+              │               │               │                           │
+              └───────────────┴───────┬───────┴───────────────────────────┘
+                                      ▼
+                          halt? ── yes ──► converged candidate → front
+                                      │ no
+                                      ▼
+                     judge (verdicts + full H table) ──► one fix ──► H
+</code></pre>
+<p><strong>Bench</strong> is the step Alchemist&#39;s generic loop does not have: a candidate here is a recipe, and testers must judge its effect. You apply the candidate to the scratch copy with workbench code, run the dev split through it, write the bundle, reset the model (<a href="cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a>), and confirm the reset with one greedy generation on a fixed probe prompt (counted as bench, not against the compiler&#39;s probe budget). Bench decides nothing and filters nothing. If applying a candidate fails (code error, NaN loss, shape mismatch), record <code>ERROR:</code> in the ledger and hand the testers a bundle whose <code>status</code> is <code>apply_failed</code>; every tester then fails with that reason, and the judge sees an honest iteration.</p>
+<h2 id="contracts">Contracts</h2>
+<h3 id="edit-spec-weights-branch-candidate">Edit spec (weights-branch candidate)</h3>
+<pre><code class="language-yaml">id: t2-i3                      # tier-iteration
+technique: ara | directional | mpoa | sparse_columns | side_path | composite
+targets:                       # what is touched, as precisely as the technique allows
+  layers: [14, 15, 16]
+  components: [mlp.down_proj]
+  detail: &quot;columns 0-63 of layers 15 and 19&quot;   # sparse/side-path only
+parameters: {...}              # every knob, explicit; no defaults left implicit
+implementation: [workbench/ara.py::fit_module]   # list: function(s) that realize it, in application order
+hypothesis: [H2]               # list of ids from map/report.md, or &quot;new: &lt;one line&gt;&quot;
+predicted:
+  behaviour: &quot;probe rate from 0.42 to &lt;=0.15&quot;
+  preservation: &quot;probe KL rise concentrated on prompts mentioning X&quot;
+probe_evidence: &quot;6 probe calls; behaviour 0.12 on probe split&quot;
+weights_changed: 0.0012        # fraction of model weights the edit touches
+deviations: []                 # anything that departs from a card&#39;s defaults, with why
+probe_budget_exhausted: false  # optional
+note: null                     # optional, e.g. &quot;no improvement found: tried …&quot;
+</code></pre>
+<h3 id="operator-spec-semantic-branch-candidate">Operator spec (semantic-branch candidate)</h3>
+<pre><code class="language-yaml">id: t1-i2
+operator: |
+  &lt;the full text&gt;
+placement: system | prefix | suffix
+prometheus_session: &lt;ref to the Prometheus output that produced it&gt;
+hypothesis: [H1]
+predicted: {behaviour: &quot;...&quot;, drift: &quot;...&quot;}
+tokens: 182                    # operator length; it is paid on every call
+probe_budget_exhausted: false  # optional
+note: null                     # optional
+</code></pre>
+<h3 id="bundle-one-per-candidate-from-bench">Bundle (one per candidate, from Bench)</h3>
+<pre><code>bundles/&lt;id&gt;/
+  status.txt                   ok | apply_failed: &lt;reason&gt;
+  behaviour.jsonl              {prompt_id, condition: bad, response, hit_length_cap}   dev bad-condition prompts
+  behaviour_meter.json         weights: keyword rate or classifier on the same responses
+                               semantic: {pull_mean, push_mean, k, keyword_rate}
+  preservation.jsonl           {prompt_id, response_base, response_new}   dev neutral prompts
+  preservation_meter.json      weights: {kl_mean, kl_p90, kl_per_prompt[]}
+                               semantic: {drift_mean, drift_p90, noise_floor, drift_multiple, drift_per_prompt[]}
+  capability.json              {task, n, accuracy_base, accuracy_new, max_length, items[{id, gold, output_base, output_new, hit_length_cap}]}
+  summary.json                 pre-computed: rates, deltas, mean response length (base, new), weights_changed or tokens,
+                               keyword_rate_new (this candidate&#39;s keyword rate; null when no markers),
+                               and the run&#39;s reference rates: keyword_rate_base, judge_rate_base (Phase 3, T1 rubric on the unedited model),
+                               judge_rate_base_t4 (Phase 3, the T4 model&#39;s labels on every-third unedited response)
+</code></pre>
+<p><code>hit_length_cap</code> is true when generation stopped at <code>max_response_length</code>: a response cut by the cap is not broken, and testers must not treat it as such.</p>
+<h3 id="projections">Projections</h3>
+<table>
+<thead>
+<tr>
+<th>Tester</th>
+<th>Gets</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>T1 behaviour</td>
+<td><code>behaviour.jsonl</code>, the behaviour rubric, the target rate</td>
+</tr>
+<tr>
+<td>T2 preservation</td>
+<td><code>preservation.jsonl</code>, <code>preservation_meter.json</code>, the preservation rubric, tier k&#39;s threshold, <code>max_changed</code></td>
+</tr>
+<tr>
+<td>T3 capability</td>
+<td><code>capability.json</code>, the allowed drop</td>
+</tr>
+<tr>
+<td>T4 Goodhart</td>
+<td>the whole bundle, the edit or operator spec, the behaviour sentence pair, the behaviour rubric, <code>goodhart_list</code>, the thresholds <code>synonym_gap</code> and <code>length_drop</code></td>
+</tr>
+</tbody></table>
+<p>Never hand a tester another tester&#39;s file or threshold (Alchemist I2, I3).</p>
+<h3 id="verdict-every-tester">Verdict (every tester)</h3>
+<pre><code>verdict: pass | fail
+reason: &lt;one or two sentences; on fail, what broke, on which prompt ids&gt;
+evidence: &lt;prompt ids or numbers the reason rests on&gt;
+</code></pre>
+<p>A tester that cannot judge its projection returns <code>verdict: fail</code> with <code>reason: inconclusive — &lt;why&gt;</code>; the judge treats inconclusive as a measurement problem, not as a property of the candidate.</p>
+<h3 id="judge-output">Judge output</h3>
+<p>Alchemist&#39;s judge format (root cause, options, <code>FIX:</code> one recommended fix), plus two lines:</p>
+<pre><code>barrier: none | probable | proven — &lt;constraint pair&gt;
+measurement_action: none | rebench | recheck &lt;technique&gt;
+</code></pre>
+<p>Only a <code>FIX:</code> line that names an actual fix goes into H. A measurement-only line (<code>FIX: none — measurement only</code>) is <strong>not</strong> appended to H. <code>measurement_action</code> is for you, never for H: <code>rebench</code> re-runs bench and testers on the same candidate; <code>recheck</code> re-runs that technique&#39;s self-check, then rebenches. A measurement-only iteration does not count toward N; at most one re-measurement is allowed per iteration. If the verdict is still inconclusive after the re-measurement, count the original iteration toward N and proceed with the next fix from the judge.</p>
+<h2 id="failure-handling">Failure handling</h2>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A tester call errors or times out</td>
+<td>Retry once with the same projection; on second failure record <code>verdict: fail, reason: inconclusive — tester error</code>, continue</td>
+</tr>
+<tr>
+<td>Bench <code>apply_failed</code> twice in a row on the same technique</td>
+<td>Judge sees it; if the next fix uses the same technique, re-run that technique&#39;s self-check before benching</td>
+</tr>
+<tr>
+<td>Probe budget exhausted mid-iteration</td>
+<td>The compiler submits its best candidate so far, marked <code>probe_budget_exhausted</code></td>
+</tr>
+<tr>
+<td>Compiler, Prometheus or Arbiter call errors, times out, or returns output that does not parse</td>
+<td>Retry once with the same inputs; on second failure record <code>ERROR:</code> and end the tier as not converged (not a proven barrier), carrying the best converged candidate forward</td>
+</tr>
+<tr>
+<td>Tournament budget N reached</td>
+<td>Alchemist&#39;s infeasibility report; ratchet stops (<code>run-protocol.md</code>, Phase 4)</td>
+</tr>
+<tr>
+<td>Barrier at the first tier</td>
+<td>The front is the floor alone; report that the tournament found nothing tighter than the baseline result at this budget</td>
+</tr>
+<tr>
+<td>Closed-model sample budget exhausted</td>
+<td>Finish the current bench if it is ≥ 80% done, otherwise mark it <code>apply_failed: sample budget</code>; stop the ratchet</td>
+</tr>
+<tr>
+<td>Vault hash mismatch in Phase 5</td>
+<td>Stop; do not score. Report that the vault changed after sealing and that no vault score from this run is valid</td>
+</tr>
+<tr>
+<td>Any role asks to see the vault</td>
+<td>Refuse; record in ledger; it does not count as a deviation unless it was given</td>
+</tr>
+</tbody></table>
+
+<nav class="pn" aria-label="Previous and next"><a href="branches.html">← Two branches</a><a href="cards/stream-and-capture.html">The residual stream, its writers, and capture →</a></nav>
+<a class="back" href="../index.html#s9">← back to the film</a>
+</main>
+</div>
+</body>
+</html>
