@@ -32,7 +32,7 @@
 <p>Removing v from what a writer emits, for every input z, moves the projector inside the matrix:</p>
 <pre><code>W′ = W − λ · v (vᵀW)              vᵀW′z = (1 − λ) · vᵀWz
 </code></pre>
-<p>λ = 0: nothing. λ = 1: the writer can no longer write along v. λ &gt; 1: it writes <em>against</em> v, pushing back the v that the embedding and earlier, unedited writers already put on the stream, which an edit at this layer cannot erase. Too far, and the stream ends negative along v, a state the model never saw in training; the preservation meter catches that.</p>
+<p>λ = 0: nothing. 0 &lt; λ &lt; 1: the component is weakened, not removed (tuning). λ &lt; 0: the writer writes more along v, which is how this edit injects a behaviour when v points from the default toward it (<a href="../skill.html"><code>SKILL.md</code></a>, Three operations). λ = 1: the writer can no longer write along v. λ &gt; 1: it writes <em>against</em> v, pushing back the v that the embedding and earlier, unedited writers already put on the stream, which an edit at this layer cannot erase. Too far, and the stream ends negative along v, a state the model never saw in training; the preservation meter catches that.</p>
 <p>Stored as a rank-1 LoRA (<a href="../cards/lora-lifecycle.html"><code>cards/lora-lifecycle.md</code></a>, lora_alpha = r so the scale is 1):</p>
 <pre><code>B = −λ · v          (d × 1)
 A = vᵀW             (1 × d_in)        in code: A = v @ W

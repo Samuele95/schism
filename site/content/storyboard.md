@@ -225,7 +225,7 @@ One continuous take, scrubbed by scroll. Timeline units run 0–184 (the approve
 - Arrives by: the disc and ring of S12, seen from ever further away.
 - Copy:
   - "SCHISM" (the name)
-  - "Decide what your model stops doing. Prove the rest held." [C-05]
+  - "Decide what your model stops doing, or starts. Prove the rest held." [C-05, C-75]
   - "Read the method →" (link to the reading room)
   - "Works with Alchemist, and any prompt compiler — Prometheus by default." [C-13, C-74]
   - "github.com/Samuele95/schism · MIT · Samuele Stronati" (link) [C-73]

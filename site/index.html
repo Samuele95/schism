@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Schism — decide what your model stops doing</title>
+    <title>Schism — decide what your model stops doing, or starts</title>
     <meta name="description" content="Schism splits one behaviour off a language model — sycophancy, slop, looping — leaves the rest as it was, and proves both." />
     <meta name="theme-color" content="#050506" />
     <meta property="og:title" content="Schism" />
-    <meta property="og:description" content="Decide what your model stops doing. Prove the rest held." />
+    <meta property="og:description" content="Inject, tune or ablate one behaviour of a language model, in its weights and its representations. Prove the rest held." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="stills/S9.webp" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%23050506%22/%3E%3Cpath d=%22M16 3v11M16 18v11%22 stroke=%22%23e0402f%22 stroke-width=%222%22/%3E%3Cpath d=%22M5 16h22%22 stroke=%22%23e8e2d4%22 stroke-width=%221%22/%3E%3C/svg%3E" />
@@ -43,7 +43,9 @@
       <!-- S3 -->
       <section class="scene" id="s3" data-start="22" data-end="34" aria-label="The promise">
         <img class="still" src="stills/S3.webp" alt="A vast cloud of pale points: a flat disc with a plume rising from it." loading="lazy" />
-        <p class="line" data-t="25,33" data-claim="C-05">Schism splits one of them off.<br /><em>Everything else is left as it was — and it proves both.</em></p>
+        <p class="line" data-t="25,33" data-claim="C-05 C-75">Schism severs one of them,<br />dials one down, or sets one in place.<br /><em>Everything else is left as it was — and it proves both.</em></p>
+        <pre class="readout" data-t="27,33"><span data-claim="C-75">&gt; ablate · tune · inject</span>
+<span data-claim="C-02 C-15">&gt; weights · representations</span></pre>
         <a class="read" href="read/index.html" data-t="25,33">read: overview →</a>
       </section>
 
@@ -71,7 +73,7 @@
       <section class="scene" id="s6" data-start="58" data-end="70" aria-label="Phase one, Frame">
         <img class="still" src="stills/S6.webp" alt="An engraved letter Y through the disc and the plume; a small sphere sealed in red beside them." loading="lazy" />
         <h2 class="rubric" data-t="58,69.5">I · Frame</h2>
-        <p class="line" data-t="59,62.5" data-claim="C-22">Name the personality you want gone.<br /><em>Show it. Then show its absence.</em></p>
+        <p class="line" data-t="59,62.5" data-claim="C-22 C-75">Name the personality you want gone,<br />or the one you want in its place.<br /><em>Show it. Then show the other side.</em></p>
         <p class="line" data-t="62.5,65.5" data-claim="C-51">Choose the prompts,<br /><em>and you have defined what will be cut.</em></p>
         <p class="line" data-t="65.5,69.5" data-claim="C-08 C-09 C-21">Seal a sample away<br /><em>before anything is touched.</em></p>
         <p class="lore" data-t="60,69" data-lore="L-4">The Samian letter: one stem, two paths.</p>
@@ -156,7 +158,7 @@
         <img class="still" src="stills/S13.webp" alt="A small ring of light among stars, with a hairline gap." loading="lazy" />
         <div class="ending" data-t="174">
           <p class="title small">SCHISM</p>
-          <p class="end-line" data-claim="C-05">Decide what your model stops doing. <em>Prove&nbsp;the&nbsp;rest&nbsp;held.</em></p>
+          <p class="end-line" data-claim="C-05 C-75">Decide what your model stops doing, or starts. <em>Prove&nbsp;the&nbsp;rest&nbsp;held.</em></p>
           <a class="cta" href="read/index.html">Read the method →</a>
           <p class="end-small" data-claim="C-13 C-74">Works with Alchemist, and any prompt compiler — <a href="https://samuele95.github.io/prometheus/">Prometheus</a> by default.</p>
           <p class="end-small" data-claim="C-73"><a href="https://github.com/Samuele95/schism">github.com/Samuele95/schism</a> · MIT · Samuele Stronati</p>

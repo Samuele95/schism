@@ -4,6 +4,8 @@
 
 ## Two ways to build a pair
 
+The pair is symmetric. BAD is the side the edit moves away from and GOOD the side it moves toward, so the same pair ablates a behaviour when GOOD is its absence and injects one when GOOD is a behaviour the model shows only when instructed (`SKILL.md`, Three operations).
+
 - **Different datasets** (the default, sycophancy, humor, emotions presets): good prompts from one source, bad from another. Easy, but whatever else separates the sources (topic, length, phrasing) leaks into the contrast. Harmful requests are about weapons and drugs; harmless ones about recipes and poems; the mean difference carries both refusal and topic.
 - **Same prompts, opposite instructions** (the slop and verbosity presets): identical prompts on both sides, with opposite system prompts or prefixes ("avoid clichés" vs "make extensive use of clichés"). Topic cancels exactly; only what the instruction induced remains. Prefer this whenever the behaviour can be induced by instruction.
 

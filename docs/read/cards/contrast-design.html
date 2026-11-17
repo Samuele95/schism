@@ -29,6 +29,7 @@
 <h1 id="card-contrast-design-presets-and-splits">Card — Contrast design, presets and splits</h1>
 <p><strong>What it buys.</strong> The definition of the behaviour. Every direction, kNN target and judge in the run is only as specific as the contrast it was built from: choosing the prompt sets <em>is</em> defining the behaviour.</p>
 <h2 id="two-ways-to-build-a-pair">Two ways to build a pair</h2>
+<p>The pair is symmetric. BAD is the side the edit moves away from and GOOD the side it moves toward, so the same pair ablates a behaviour when GOOD is its absence and injects one when GOOD is a behaviour the model shows only when instructed (<a href="../skill.html"><code>SKILL.md</code></a>, Three operations).</p>
 <ul>
 <li><strong>Different datasets</strong> (the default, sycophancy, humor, emotions presets): good prompts from one source, bad from another. Easy, but whatever else separates the sources (topic, length, phrasing) leaks into the contrast. Harmful requests are about weapons and drugs; harmless ones about recipes and poems; the mean difference carries both refusal and topic.</li>
 <li><strong>Same prompts, opposite instructions</strong> (the slop and verbosity presets): identical prompts on both sides, with opposite system prompts or prefixes (&quot;avoid clichés&quot; vs &quot;make extensive use of clichés&quot;). Topic cancels exactly; only what the instruction induced remains. Prefer this whenever the behaviour can be induced by instruction.</li>

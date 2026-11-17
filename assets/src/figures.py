@@ -160,7 +160,7 @@ def banner():
 {t(96, 186, 'S C H I S M', 76, BONE, SERIF, 'start', 0.02)}
 {t(100, 226, 'σχίσμα — a cleft, a division', 22, DIM, SERIF, 'start', 0.04, 'font-style:italic;')}
 <line x1="100" y1="262" x2="160" y2="262" stroke="{RED}" stroke-width="1.2"/>
-{t(100, 298, 'Decide what your model stops doing.', 25, BONE)}
+{t(100, 298, 'Decide what your model stops doing, or starts.', 25, BONE)}
 {t(100, 330, 'Prove the rest held.', 25, DIM, SERIF, 'start', 0, 'font-style:italic;')}
 {t(100, 380, 'an agent skill for model-behaviour engineering  ·  weights or prompts  ·  MIT', 12, DIM, MONO, 'start', 0.04)}
 '''

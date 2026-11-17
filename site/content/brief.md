@@ -4,11 +4,11 @@ Source: `schism-package/` (README.md, USAGE.md, schism/, delivery/). Every state
 
 ## 1. In one sentence
 
-Schism changes one behaviour of a language model while leaving the rest of it as it was, and proves both halves of that claim. [C-01, C-05]
+Schism injects, tunes or ablates one behaviour of a language model, by intervening in its weight space and on its internal representations, while leaving the rest of it as it was; and it proves both halves of that claim. [C-01, C-05, C-75]
 
 ## 2. In one paragraph
 
-Schism is an agent skill: a method, written as technique cards and role prompts, that a capable LLM agent carries out itself. It contains no code; the agent implements each technique from its card, self-checks it, and keeps it for later runs. [C-06, C-11] It targets one behaviour at a time, such as slop, sycophancy, verbosity, humor, tone or looping [C-01], either by editing an open model's weights or, on a closed model, by building a prompt operator measured in embedding space [C-02, C-15, C-16]. The search for the edit runs as an Alchemist tournament, every prompt in a run is written through Prometheus, and results are judged once on a sealed vault against a baseline floor [C-03]. It is for practitioners who want to remove, reduce or locate a behaviour ("where does X live in this model") or steer a closed model's style; it is not for training or fine-tuning [C-04].
+Schism is an agent skill, a method written as technique cards and role prompts that a capable LLM agent carries out itself: the package contains no code, so the agent implements each technique from its card, self-checks it and keeps it for later runs. [C-06, C-11] It works on one behaviour at a time, such as slop, sycophancy, verbosity, humor, tone or looping, and it can do three things with it. It can ablate a behaviour the model shows, inject one the model shows only when asked so that it becomes the default, or tune how strongly an edit acts, and all three come from the same contrast pair read in one direction or the other. [C-01, C-75, C-76] On an open model the edit is a change to the weights, computed from the model's internal representations; on a closed one it is a prompt operator measured in embedding space. [C-02, C-15, C-16] The search runs as an Alchemist tournament, every prompt comes from a prompt compiler, and the results are judged once on a sealed vault against a baseline floor. [C-03, C-74] It serves LLM ablation, customisation without a fine-tuning dataset, and locating a behaviour ("where does X live in this model"), while gradient fine-tuning on a corpus and the editing of facts or knowledge are outside it. [C-04, C-77]
 
 ## 3. What a run hands back
 
@@ -140,11 +140,11 @@ Five phases. [C-20]
 
 | Id | Claim | Source | Qualifier |
 |---|---|---|---|
-| C-01 | Schism changes or inspects a language model's behaviour, such as slop, sycophancy, verbosity, humor, tone or looping. | schism/SKILL.md › description | examples, not a closed list |
+| C-01 | Schism injects, tunes or ablates (and inspects) one behaviour of a language model, such as slop, sycophancy, verbosity, humor, tone, looping, or a register or style it should keep. | schism/SKILL.md › description | examples, not a closed list |
 | C-02 | It works through contrast pairs, activation geometry and weight edits (directional ablation, MPOA, ARA, WSP-style sparse surgery), or, on closed models, through prompt operators measured in embedding space. | schism/SKILL.md › description | |
 | C-03 | The search runs as an Alchemist tournament, every prompt comes from a prompt compiler (any map from a prompt to a prompt; Prometheus by default), and results are judged once on a sealed vault against a baseline floor. | schism/SKILL.md › description | |
-| C-04 | Use it to abliterate or reduce or remove a behaviour, to find where a behaviour lives in a model, or to steer a closed model's style; it is not for training or fine-tuning. | schism/SKILL.md › description | |
-| C-05 | The agent changes one behaviour while leaving the rest of the model as it was, and can prove both halves of that claim. | schism/SKILL.md › intro | |
+| C-04 | Use it to abliterate, reduce or remove a behaviour, to make one the default, to find where a behaviour lives, or to steer a closed model's style: LLM ablation and customisation without a fine-tuning dataset. It is not for gradient fine-tuning on a corpus, nor for editing facts or knowledge. | schism/SKILL.md › description | |
+| C-05 | The agent changes one behaviour (removing it, setting its strength, or making it the default) while leaving the rest of the model as it was, and can prove both halves of that claim. | schism/SKILL.md › intro | |
 | C-06 | No toolkit is installed: the technique cards describe every method precisely enough that the agent implements it itself; the package contains no code. | schism/SKILL.md › intro; USAGE.md › What you have | |
 | C-07 | Weights are never overwritten: edits live in adapters on a scratch copy and exports go to a new folder, because the original is the reference every number is measured against. | schism/SKILL.md › Ground rules | weights branch |
 | C-08 | Four disjoint prompt splits are fixed at the start: fit, probe, dev and vault. | schism/SKILL.md › Ground rules | |
@@ -211,6 +211,9 @@ Five phases. [C-20]
 | C-69 | The test plan asks for a head-to-head against the baseline pipeline on two behaviours and two model sizes before drawing a general conclusion: "one run is an anecdote". | delivery/EMPIRICAL-TEST.md › B | |
 | C-70 | The package was designed with Prometheus. | README.md | |
 | C-71 | When behaviour and preservation keep trading places, the Arbiter changes where or how the edit acts, not how much. | roles/arbiter.md › Patterns | |
+| C-75 | One contrast pair, symmetric: ablate when GOOD is the behaviour's absence, inject when GOOD is a behaviour the model shows only when instructed, tune by the strength of the edit (λ, ARA's weights, the operator's wording), with the preservation tiers bounding it. | schism/SKILL.md › Three operations; cards/contrast-design.md | |
+| C-76 | Injection makes the model do by default what it already does on request; it cannot give it a behaviour it never produces. ARA and the semantic branch inject directly; directional ablation injects with λ < 0. | schism/SKILL.md › Three operations; cards/directional-ablation.md | |
+| C-77 | No fine-tuning dataset is needed: the edit comes from two sets of prompts and the model's own activations, with no labelled targets and no training corpus; ARA still fits its adapter by optimisation. Facts and knowledge are out of scope. | schism/SKILL.md › Three operations | |
 | C-74 | The prompt compiler is any map from a prompt (or a request for one) to a prompt: a meta-prompting skill such as Prometheus, a plain LLM call asking for that kind of prompt, or anything else. The brief names it, every call is stored, and on the semantic branch each operator is the compiler applied to the last one and the judge's fixes. | schism/SKILL.md › family; roles/operator-compiler.md | |
 | C-73 | Schism is published at github.com/Samuele95/schism under the MIT licence; its author is Samuele Stronati. | the author, 17 Nov 2026 (not in the package) | |
 | C-72 | Mapping is where Schism extends the baseline: the baseline never asks where a behaviour lives; it edits a band and lets the search sort it out. | cards/feasibility-and-locate.md | |
