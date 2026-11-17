@@ -110,13 +110,16 @@ html.film .read { left: calc(7vw + var(--sal)); bottom: calc(5vh + var(--sab)); 
 html.film .ending { left: 50%; top: 66%; transform: translate(-50%, -50%); text-align: center; width: min(92vw, 40rem); pointer-events: auto; }
 
 html.film #labels { display: block; position: fixed; inset: 0; pointer-events: none; z-index: 1; }
-.mu, .tlabel {
+.mu, .tlabel, .blabel {
   position: absolute; left: 0; top: 0; opacity: 0; white-space: nowrap;
   font: 0.7rem/1 var(--mono); letter-spacing: 0.08em; color: var(--bone-dim);
 }
 .mu.bad { color: var(--rubric); }
 .tlabel { color: var(--phosphor); }
 .tlabel.judge { color: var(--bone-dim); }
+.blabel.phos { color: var(--phosphor); }
+.blabel.bad { color: var(--rubric); }
+@media (max-width: 640px) { .blabel { font-size: 0.62rem; } }
 
 html.film .phases {
   display: flex; gap: 0.9rem; position: fixed; z-index: 3;

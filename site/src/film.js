@@ -5,6 +5,7 @@ import Lenis from 'lenis';
 import { buildGlyphAtlas } from './glyphs.js';
 import { buildSpace, particleMaterial } from './space.js';
 import { buildInstruments, buildDepth } from './instruments.js';
+import { buildBranches, branchLayout } from './branches.js';
 import { buildPost } from './post.js';
 import { buildCameraPath, cameraAt } from './camera.js';
 import { createSound } from './sound.js';
@@ -53,7 +54,10 @@ export async function startFilm(params) {
   const inst = buildInstruments(scene, space);
   const depth = buildDepth(scene, PROFILE.motes);
   const post = buildPost(renderer, scene, camera, { bloom: PROFILE.bloom });
-  buildCameraPath(space);
+  const branches = buildBranches(scene, atlas);
+  let layout = branchLayout(innerWidth / innerHeight);
+  branches.setLayout(layout);
+  buildCameraPath(space, layout);
 
   function resize() {
     const pr = Math.min(devicePixelRatio || 1, PROFILE.dprCap);
@@ -65,6 +69,9 @@ export async function startFilm(params) {
     camera.updateProjectionMatrix();
     const proj = (h * pr) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
     for (const m of [material, ghostMat, depth.motes.material]) { m.uniforms.uProj.value = proj; m.uniforms.uPR.value = pr; }
+    branches.setProj(proj);
+    const lay = branchLayout(w / h);
+    if (lay.tall !== layout.tall) { layout = lay; branches.setLayout(layout); buildCameraPath(space, layout); }
   }
   addEventListener('resize', resize);
   resize();
@@ -77,7 +84,8 @@ export async function startFilm(params) {
     floorOn: 0, floorPos: 0, floorMark: 1, toFloor: 0, unfold: 0, yToRing: 0, converge: 0, ghostRise: 0,
     bladeScale: 1, bladeLine: 0, bladeSheet: 0, gap: 0, cut: 0, freeze: 0, collapse: 0,
     testers: 0, ghost: 0, vaultOpen: 0, sealBreak: 0, cleft: 0,
-    glitch: 0, scan: 0, aperture: 0.035, phases: 0,
+    glitch: 0, scan: 0, aperture: 0.035, phases: 0, bright: 1,
+    brOpen: 0, wAsm: 0, ba: 0, baFill: 0, baOver: 0, brClosed: 0, answers: 0, op: 0, move: 0, brOut: 0,
   };
 
   const lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 });
@@ -120,8 +128,21 @@ export async function startFilm(params) {
   at(10, { aperture: 0.008, duration: 10 });
   at(23, { toSpace: 1, duration: 10 });
   at(26, { aperture: 0.022, duration: 6 });
-  // S5: the veil
+  // S5: the veil, and the two branches either side of it (branches.js)
   at(45, { veil: 1, duration: 4 });
+  at(44.6, { bright: 0.5, duration: 2.5 });
+  at(56.4, { bright: 1, duration: 2.5 });
+  at(45.2, { brOpen: 1, duration: 1.4 });
+  at(45.3, { wAsm: 1, duration: 3, ease: 'power2.out' });           // W assembles from loose digits
+  at(46.7, { ba: 1, duration: 1.2 });                                // B and A are drawn beside it
+  at(47.2, { baFill: 1, duration: 1.3, ease: 'power1.inOut' });     // and span the rank-one panel B·A
+  at(48.1, { baOver: 1, duration: 0.9 });                            // laid over W …
+  at(49.0, { baOver: 0, duration: 0.9 });                            // … and lifted off: W is unchanged
+  at(49.4, { brClosed: 1, duration: 1.6 });                          // the sealed model
+  at(50.0, { answers: 1, duration: 1.8 });                           // its answers, as embeddings
+  at(50.8, { op: 1, duration: 1.4 });                                // operator text flows in
+  at(52.0, { move: 1, duration: 3.2 });                              // and only some answers move
+  at(56.2, { brOut: 1, duration: 1.5, ease: 'power2.in' });
   // S6: the veil's threads gather into the Y; a sample is sealed away
   at(56.5, { converge: 1, duration: 2.5, ease: 'power2.in' });
   at(57, { veil: 0, duration: 2 });
@@ -200,6 +221,7 @@ export async function startFilm(params) {
   const labels = {
     muGood: document.getElementById('muGood'), muBad: document.getElementById('muBad'),
     t: [...document.querySelectorAll('.tlabel')],
+    b: Object.fromEntries([...document.querySelectorAll('.blabel')].map((el) => [el.dataset.k, el])),
   };
   const phaseEls = [...document.querySelectorAll('#phases span')];
   const phasesNav = document.getElementById('phases');
@@ -212,11 +234,13 @@ export async function startFilm(params) {
   let frameMs = 16.7, lastDebug = 0, hidden = false;
   document.addEventListener('visibilitychange', () => { hidden = document.hidden; });
 
-  function placeLabel(el, obj, o) {
+  function placeLabel(el, obj, o, centred = false) {
     obj.getWorldPosition(tmp).project(camera);
     const vis = o > 0.01 && tmp.z < 1;
     el.style.opacity = vis ? o.toFixed(3) : '0';
-    if (vis) el.style.transform = `translate(${((tmp.x + 1) / 2) * innerWidth + 12}px, ${((1 - tmp.y) / 2) * innerHeight - 10}px)`;
+    if (vis) el.style.transform = centred
+      ? `translate(${((tmp.x + 1) / 2) * innerWidth}px, ${((1 - tmp.y) / 2) * innerHeight}px) translate(-50%, -50%)`
+      : `translate(${((tmp.x + 1) / 2) * innerWidth + 12}px, ${((1 - tmp.y) / 2) * innerHeight - 10}px)`;
   }
   function phaseAt(t) {
     if (t < 70) return 1; if (t < 90) return 2; if (t < 98) return 3; if (t < 154) return 4; return 5;
@@ -249,7 +273,7 @@ export async function startFilm(params) {
     U.uToGrid.value = S.toGrid; U.uToSpace.value = S.toSpace; U.uReveal.value = S.reveal;
     U.uCut.value = S.cut; U.uCollapse.value = S.collapse;
     U.uFocus.value = focus; U.uAperture.value = S.aperture; U.uFogNear.value = focus + 12; U.uFogDen.value = 0.03;
-    U.uVault.value = S.vault; U.uVaultOpen.value = S.vaultOpen; U.uVeil.value = S.veil;
+    U.uVault.value = S.vault; U.uVaultOpen.value = S.vaultOpen; U.uVeil.value = S.veil; U.uBright.value = S.bright;
     ghost.visible = S.ghost > 0.002;
     if (ghost.visible) {
       G.uDriftT.value = clock.driftT; G.uFocus.value = focus; G.uAperture.value = S.aperture;
@@ -260,6 +284,7 @@ export async function startFilm(params) {
     depth.motes.material.uniforms.uT.value = clock.driftT;
 
     inst.update(S, camera);
+    branches.update(S, clock.driftT);
     post.signal.uniforms.uTime.value = time;
     post.signal.uniforms.uGlitch.value = S.glitch;
     post.signal.uniforms.uScan.value = S.scan;
@@ -272,6 +297,12 @@ export async function startFilm(params) {
     placeLabel(labels.muGood, inst.markG, m);
     placeLabel(labels.muBad, inst.markB, m);
     labels.t.forEach((el, k) => placeLabel(el, k < 4 ? inst.tAnchors[k] : inst.judge, S.testers * (k < 4 ? 1 : 0.7)));
+    const bo = 1 - S.brOut, A = branches.anchors;
+    placeLabel(labels.b.w, A.w, S.brOpen * bo * Math.min(Math.max(S.wAsm * 2 - 1, 0), 1), true);
+    placeLabel(labels.b.ba, A.ba, S.brOpen * bo * S.baFill * (1 - S.baOver) * (layout.tall ? 0 : 1), true);
+    placeLabel(labels.b.op, A.op, S.brClosed * bo * S.op * (layout.tall ? 0 : 1), true);
+    placeLabel(labels.b.model, A.model, S.brClosed * bo, true);
+    placeLabel(labels.b.cloud, A.cloud, S.brClosed * bo * S.answers * (layout.tall ? 0 : 1), true);
     phasesNav.style.opacity = S.phases.toFixed(3);
     const ph = phaseAt(T);
     phaseEls.forEach((el, i) => el.classList.toggle('on', i + 1 === ph));

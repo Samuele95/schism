@@ -6,7 +6,7 @@ import * as THREE from 'three';
 const K = [];
 const key = (t, p, l) => K.push({ t, p: new THREE.Vector3(...p), l: new THREE.Vector3(...l) });
 
-export function buildCameraPath({ vaultPos }) {
+export function buildCameraPath({ vaultPos }, lay) {
   K.length = 0;
   // S1–S3: the rain, the matrix, through it into the space
   key(0, [0, 2, 30], [0, 0.5, 0]);
@@ -19,10 +19,18 @@ export function buildCameraPath({ vaultPos }) {
   key(35, [20, 12, 30], [0, 1.5, 0]);
   key(40, [32, 13, 12], [0, 1.5, 0]);
   key(44, [30, 9, 20], [0, 2, 0]);
-  // S5: along the veil, always on its near side
-  key(49, [24, 8, 28], [0, 2, 0]);
-  key(54, [15, 7, 33], [0, 2, 0]);
-  key(58, [9, 8, 36], [0, 2, 0]);
+  // S5: the two branches, one each side of the veil — close on the open weights, across to the closed model,
+  // then back to hold both with the veil between them (branches.js places them; the shots follow the layout)
+  {
+    const o = lay.open.pos, c = lay.closed.pos, s = lay.tall ? 0.75 : 1;
+    key(47.0, [o.x + 8.5 * s, o.y + 2.2 * s, o.z + 12.5 * s], [o.x - 0.3 * s, o.y, o.z]);
+    key(48.7, [o.x + 5.5 * s, o.y + 1.6 * s, o.z + 12 * s], [o.x - 0.6 * s, o.y, o.z]);
+    key(50.9, [c.x - 7 * s, c.y + 2.2 * s, c.z + 12.5 * s], [c.x + 0.4 * s, c.y, c.z]);
+    key(52.9, [c.x - 4.5 * s, c.y + 1.6 * s, c.z + 12.5 * s], [c.x + 0.8 * s, c.y, c.z]);
+    key(55.0, lay.tall ? [0.4, 3.2, 32] : [0.6, 5.2, 33], [0, 3, 13]);
+    key(56.6, lay.tall ? [-0.4, 3.4, 33.5] : [-0.6, 5.4, 34.5], [0, 3, 12.5]);   // held, both branches and the veil
+  }
+  key(58.5, [9, 8, 36], [0, 2, 0]);
   // S6: back, to hold the whole letter and the sealed sample
   key(62, [-6, 11, 38], [0, 2, 3]);
   key(68, [-22, 10, 32], [1, 1.5, 5]);

@@ -298,7 +298,8 @@ export function buildInstruments(scene, { axis, plumeHeight, grid, b1, b2, vault
       });
 
       // the veil's threads grow from the disc plane, then converge on the axis, where the Y's fork appears
-      veilMat.opacity = Math.max(st.veil, st.converge > 0 && st.converge < 1 ? 0.6 : 0) * 0.22;
+      // seen edge-on between the two branches the threads stack up, so they are drawn lighter there
+      veilMat.opacity = Math.max(st.veil, st.converge > 0 && st.converge < 1 ? 0.6 : 0) * 0.22 * (1 - 0.4 * st.brClosed * (1 - st.brOut));
       veil.visible = st.veil > 0.002 || (st.converge > 0.002 && st.converge < 0.998);
       threads.forEach((t, k) => {
         t.scale.setScalar(Math.max(Math.min(Math.max(st.veil, st.converge < 1 ? 0.6 * (1 - st.converge) : 0) * 1.6 - (Math.abs(k - 32) / 32) * 0.6, 1), 0.0001));
