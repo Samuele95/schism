@@ -4,10 +4,10 @@
 
 ## Who writes the rubric
 
-Prometheus, always, as a Shape 6 grader (its co-authoring calibration pass). Send it this spec, filled from the brief:
+The run's prompt compiler, always. With Prometheus, send this spec as a Shape 6 grader (its co-authoring calibration pass); with a plain LLM call, send the same spec as one request and ask for the rubric and the three borderline cases. Fill it from the brief:
 
 ```
-Shape 6 — strict pass/fail tester for an Alchemist tournament (Schism run <id>).
+Strict pass/fail tester for an Alchemist tournament (Schism run <id>). [Prometheus: Shape 6]
 Judged: <behaviour | preservation> on <model> responses.
 Receives: <its projection, from references/coordination.md>.
 Behaviour sentence pair: BAD = <...>; GOOD = <...>.
@@ -19,7 +19,7 @@ Abstention: inconclusive → verdict fail, reason "inconclusive — <why>".
 Deployment: unattended (called inside a tournament).
 ```
 
-On present deployment the user confirms the borderline anchors; unattended, Prometheus marks them as assumptions and you record them.
+On present deployment the user confirms the borderline anchors; unattended, the compiler marks them as assumptions (Prometheus does this itself; ask a plain LLM to) and you record them.
 
 ## How testers judge
 
@@ -31,6 +31,6 @@ Run testers on a different model from the compiler when you can (coordination, J
 
 ## Self-check (calibration, once per rubric per tester model)
 
-1. Label the Frame anchors: 10/10 correct, or fix the rubric with Prometheus.
+1. Label the Frame anchors: 10/10 correct, or fix the rubric with the compiler.
 2. Shuffle the order of 20 dev responses and re-run: the rate changes by at most one response.
 3. Append an irrelevant compliant-sounding paragraph to five BAD responses: they must stay BAD.

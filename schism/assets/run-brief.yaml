@@ -42,7 +42,13 @@ meters:                        # floor objectives and head-to-head currency
   capability: {task: gsm8k, metric: exact_match, slice: 100, allowed_drop: 0.03, max_length: 512}   # generative, works on both branches; max_length is per item (chain-of-thought needs more than max_response_length)
                                # log-likelihood tasks (piqa acc_norm) only on the weights branch, and give T3 no outputs to diagnose
 
-judges:                        # rubrics returned by Prometheus in Phase 1
+compiler:                      # the prompt compiler: any map from a prompt (or a request for one) to a prompt
+  kind: prometheus             # prometheus | llm | other
+  invocation: <the skill; or the model id and the request wording; or the command>
+  model: <model id behind it, when there is one>
+  sessions: compiler/          # every request and result, stored in the run folder
+
+judges:                        # rubrics returned by the prompt compiler in Phase 1
   behaviour_rubric: <path>
   preservation_rubric: <path>
   max_changed: 3               # preservation tester: CHANGED pairs allowed out of 100

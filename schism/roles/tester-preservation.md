@@ -14,7 +14,7 @@ PASS iff both hold:
 1. **Weights branch:** the meter's KL mean is at or below **`<tier threshold>`**. **Semantic branch:** `drift_multiple` (drift as a multiple of the noise floor, in `preservation_meter.json`) is at or below the tier's noise-floor multiple. Use `drift_per_prompt[]` to find the highest-drift prompts.
 2. No more than **`<max changed>`** paired responses are labelled CHANGED by the rubric.
 
-## Rubric (designed by Prometheus for this run)
+## Rubric (designed by the run's prompt compiler)
 
 `<preservation rubric: SAME / CHANGED / UNSURE, judged on intent, correctness, completeness and register; anchors>`
 

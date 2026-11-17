@@ -1,6 +1,6 @@
 # Card — The semantic branch: closed models
 
-**What it buys.** The standard recipe on a model whose weights you cannot touch. The edit becomes a prompt operator; every geometric quantity is measured on embeddings of sampled responses; Prometheus writes the operators and Alchemist converges them.
+**What it buys.** The standard recipe on a model whose weights you cannot touch. The edit becomes a prompt operator; every geometric quantity is measured on embeddings of sampled responses; the run's prompt compiler writes the operators and Alchemist converges them.
 
 ## Scope
 
@@ -26,7 +26,7 @@ On probe prompts, sample three sets: **base** (the prompt as is: the model's def
 
 ## Candidate operators
 
-An operator is text placed as a system prompt, a prefix or a suffix (`references/coordination.md`, operator spec). The compiler is `roles/operator-compiler.md`, which sends Prometheus the design request; operators are never hand-written. Candidate zero (the floor) is the good-condition instruction used verbatim.
+An operator is text placed as a system prompt, a prefix or a suffix (`references/coordination.md`, operator spec). The compiler is `roles/operator-compiler.md`, which sends the run's prompt compiler the design request; operators are never written inline. Candidate zero (the floor) is the good-condition instruction used verbatim.
 
 ## Measurements per candidate (bench)
 

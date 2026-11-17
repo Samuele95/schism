@@ -163,7 +163,7 @@ One continuous take, scrubbed by scroll. Timeline units run 0–184 (the approve
   - (formula) "W′ = W − λ · v (vᵀW)" [C-45]
   - "Four examiners, kept apart, each test one thing." / "A judge reads every verdict and the whole history — and orders one fix." [C-37, C-38]
   - "The hand that cuts never sees a verdict." / "Only the next instruction." [C-36]
-  - "Alchemist runs the operation." / "Prometheus writes every prompt in it." [C-13, C-14]
+  - "Alchemist runs the operation." / "A prompt compiler writes every prompt in it — any hand that turns a prompt into a prompt." [C-13, C-14, C-74]
   - (phosphor, by the four marks) "T1 behaviour · T2 preservation · T3 capability · T4 Goodhart" [C-37, C-50]
 - Interaction: none
 - Fallback still (reduced motion, no WebGL): the held cut — red plume above the white disc, the severed rod, the blade's edge, the four marks; copy as above.
@@ -227,7 +227,7 @@ One continuous take, scrubbed by scroll. Timeline units run 0–184 (the approve
   - "SCHISM" (the name)
   - "Decide what your model stops doing. Prove the rest held." [C-05]
   - "Read the method →" (link to the reading room)
-  - "Works with Alchemist and Prometheus." [C-13]
+  - "Works with Alchemist, and any prompt compiler — Prometheus by default." [C-13, C-74]
   - "github.com/Samuele95/schism · MIT · Samuele Stronati" (link) [C-73]
 - Interaction: the link; pointer parallax.
 - Fallback still (reduced motion, no WebGL): the ring as a small point of light with its gap; copy as above.
@@ -246,7 +246,7 @@ One continuous take, scrubbed by scroll. Timeline units run 0–184 (the approve
 | S6 | I · Frame | the contrast pair; the vault sealed first |
 | S7 | II · Map | find where it lives; stop if there is nothing to switch off |
 | S8 | III · Floor | the baseline the tournament starts from |
-| S9 | IV · Tournament | proposed, tested apart, judged; Alchemist and Prometheus |
+| S9 | IV · Tournament | proposed, tested apart, judged; Alchemist and the prompt compiler |
 | S10 | The collapse | the behaviour removed, everything else kept, and measured |
 | S11 | The gloss | the original is never overwritten |
 | S12 | V · Seal | the vault opened once; the result set against the floor |

@@ -67,8 +67,8 @@
 <td>greedy</td>
 </tr>
 <tr>
-<td>LLM judges and compilers</td>
-<td>not pinnable: record model id, temperature, and every prompt and output in the run folder</td>
+<td>LLM judges, compilers and the prompt compiler</td>
+<td>not pinnable: record the compiler&#39;s kind and invocation, model id, temperature, and every request and output in the run folder (<code>compiler/</code> for the prompt compiler)</td>
 </tr>
 <tr>
 <td>hardware, drivers, packages</td>
@@ -77,7 +77,7 @@
 </tbody></table>
 <p>Agent decisions are not replayable; the ledger plus the stored candidate specs are. A replay re-applies the stored specs and re-scores; it does not re-run the agents.</p>
 <h2 id="manifest-seal-manifest-json">Manifest (<code>seal/manifest.json</code>)</h2>
-<p>Brief (with pinned commits), workbench file hashes, every front candidate&#39;s spec, vault scores, the recommended candidate, environment (Python, OS, accelerator, driver, package versions), SHA-256 of each exported file, ledger hash.</p>
+<p>Brief (with pinned commits and the <code>compiler</code> block), workbench file hashes, every front candidate&#39;s spec, vault scores, the recommended candidate, environment (Python, OS, accelerator, driver, package versions), SHA-256 of each exported file, ledger hash.</p>
 <h2 id="self-check-every-export">Self-check (every export)</h2>
 <p>Re-hash every exported file and compare with the manifest; re-load the export and reproduce the recommended candidate&#39;s greedy outputs on 5 probe prompts. Mismatch → the export is not delivered.</p>
 

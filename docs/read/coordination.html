@@ -62,7 +62,7 @@
 <td><a href="roles/operator-compiler.html"><code>roles/operator-compiler.md</code></a></td>
 <td>P (its slots, filled from the brief), map, probe split, fixes H</td>
 <td>candidate operator spec</td>
-<td>frontier, via Prometheus</td>
+<td>frontier, calling the run&#39;s prompt compiler</td>
 </tr>
 <tr>
 <td>Behaviour tester</td>
@@ -155,7 +155,7 @@ note: null                     # optional, e.g. &quot;no improvement found: trie
 operator: |
   &lt;the full text&gt;
 placement: system | prefix | suffix
-prometheus_session: &lt;ref to the Prometheus output that produced it&gt;
+compiler_session: &lt;ref to the stored prompt-compiler request and response that produced it&gt;
 hypothesis: [H1]
 predicted: {behaviour: &quot;...&quot;, drift: &quot;...&quot;}
 tokens: 182                    # operator length; it is paid on every call
@@ -237,7 +237,7 @@ measurement_action: none | rebench | recheck &lt;technique&gt;
 <td>The compiler submits its best candidate so far, marked <code>probe_budget_exhausted</code></td>
 </tr>
 <tr>
-<td>Compiler, Prometheus or Arbiter call errors, times out, or returns output that does not parse</td>
+<td>Smith, operator compiler, prompt compiler or Arbiter call errors, times out, or returns output that does not parse</td>
 <td>Retry once with the same inputs; on second failure record <code>ERROR:</code> and end the tier as not converged (not a proven barrier), carrying the best converged candidate forward</td>
 </tr>
 <tr>

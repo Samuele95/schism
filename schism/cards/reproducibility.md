@@ -17,14 +17,14 @@
 | datasets, classifier and judge model weights | commit hashes resolved at Frame, written into the brief |
 | TPE proposals | sampler seed |
 | generation in meters and bench | greedy |
-| LLM judges and compilers | not pinnable: record model id, temperature, and every prompt and output in the run folder |
+| LLM judges, compilers and the prompt compiler | not pinnable: record the compiler's kind and invocation, model id, temperature, and every request and output in the run folder (`compiler/` for the prompt compiler) |
 | hardware, drivers, packages | recorded, compared on replay |
 
 Agent decisions are not replayable; the ledger plus the stored candidate specs are. A replay re-applies the stored specs and re-scores; it does not re-run the agents.
 
 ## Manifest (`seal/manifest.json`)
 
-Brief (with pinned commits), workbench file hashes, every front candidate's spec, vault scores, the recommended candidate, environment (Python, OS, accelerator, driver, package versions), SHA-256 of each exported file, ledger hash.
+Brief (with pinned commits and the `compiler` block), workbench file hashes, every front candidate's spec, vault scores, the recommended candidate, environment (Python, OS, accelerator, driver, package versions), SHA-256 of each exported file, ledger hash.
 
 ## Self-check (every export)
 

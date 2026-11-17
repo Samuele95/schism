@@ -291,7 +291,7 @@ def tournament():
     testers = [('T1 · behaviour', 'is it gone?'), ('T2 · preservation', 'did the rest move?'),
                ('T3 · capability', 'can it still do the work?'), ('T4 · Goodhart', 'was it gamed?')]
     p = [smallcaps(40, 46, 'the tournament', 16, DIM, 'start', 0.3),
-         t(W - 40, 46, 'Alchemist runs it  ·  Prometheus writes every prompt in it', 12, DIM, MONO, 'end'),
+         t(W - 40, 46, 'Alchemist runs it  ·  a prompt compiler, P ↦ Q, writes every prompt in it', 12, DIM, MONO, 'end'),
          box(48, 200, 220, 96, 'The hand that cuts', 'Smith · operator compiler', BONE, 'one candidate per call'),
          box(340, 200, 190, 96, 'Bench', 'apply · run dev · reset', BONE, 'decides nothing'),
          arrow(268, 248, 338, 248, BONE, 'candidate')]

@@ -27,7 +27,7 @@
 <p class="crumb">Technique card</p>
 <p class="source">Rendered from <a href="https://github.com/Samuele95/schism/blob/main/schism/cards/semantic-branch.md"><code>schism/cards/semantic-branch.md</code></a>, as written.</p>
 <h1 id="card-the-semantic-branch-closed-models">Card — The semantic branch: closed models</h1>
-<p><strong>What it buys.</strong> The standard recipe on a model whose weights you cannot touch. The edit becomes a prompt operator; every geometric quantity is measured on embeddings of sampled responses; Prometheus writes the operators and Alchemist converges them.</p>
+<p><strong>What it buys.</strong> The standard recipe on a model whose weights you cannot touch. The edit becomes a prompt operator; every geometric quantity is measured on embeddings of sampled responses; the run&#39;s prompt compiler writes the operators and Alchemist converges them.</p>
 <h2 id="scope">Scope</h2>
 <p>Behaviour and style traits: slop, sycophancy, verbosity, humor, tone, looping, formatting habits. A result here is &quot;this model <strong>with this operator</strong>&quot;, never a change to the model; it costs the operator&#39;s tokens on every call, a user&#39;s own instructions can override it, and it may not survive a model update.</p>
 <h2 id="sampling">Sampling</h2>
@@ -43,7 +43,7 @@
 </ul>
 <p><strong>Feasibility gate.</strong> If base and good are not separable (accuracy &lt; 0.65), the instruction does not move the behaviour enough to measure: verdict <strong>absent</strong> for prompt-space steering. Otherwise <strong>switchable</strong>.</p>
 <h2 id="candidate-operators">Candidate operators</h2>
-<p>An operator is text placed as a system prompt, a prefix or a suffix (<a href="../coordination.html"><code>references/coordination.md</code></a>, operator spec). The compiler is <a href="../roles/operator-compiler.html"><code>roles/operator-compiler.md</code></a>, which sends Prometheus the design request; operators are never hand-written. Candidate zero (the floor) is the good-condition instruction used verbatim.</p>
+<p>An operator is text placed as a system prompt, a prefix or a suffix (<a href="../coordination.html"><code>references/coordination.md</code></a>, operator spec). The compiler is <a href="../roles/operator-compiler.html"><code>roles/operator-compiler.md</code></a>, which sends the run&#39;s prompt compiler the design request; operators are never written inline. Candidate zero (the floor) is the good-condition instruction used verbatim.</p>
 <h2 id="measurements-per-candidate-bench">Measurements per candidate (bench)</h2>
 <ul>
 <li><strong>Behaviour (ARA analogue):</strong> for dev base-condition prompts answered with the operator, pull = mean kNN_k(emb, E_good) and push = mean kNN_k(emb, E_base), k = 5, computed against the embeddings of the probe good and base sets; plus the LLM behaviour judge&#39;s rate.</li>

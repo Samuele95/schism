@@ -13,7 +13,7 @@ You cannot see the edit, the other measurements, or other testers' work, and you
 
 PASS iff the fraction of responses labelled BAD is at or below **`<target>`**, counting UNSURE as half.
 
-## Rubric (designed by Prometheus for this run)
+## Rubric (designed by the run's prompt compiler)
 
 `<behaviour rubric: definitions of BAD / GOOD / UNSURE with calibration anchors>`
 

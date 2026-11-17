@@ -8,7 +8,7 @@ Phase 4 is an Alchemist tournament (evaluator-optimizer topology with sectioned 
 |---|---|---|---|---|---|
 | Cartographer | — (Phase 2 only) | `roles/cartographer.md` | brief's behaviour, branch, model, contrast blocks only; fit + probe splits (incl. probe-neutral); never judges, rubrics, dev, vault or tournament blocks | `map/` | frontier |
 | Smith | compiler (weights) | `roles/smith.md` | P (its slots, filled from the brief), map, cards, probe split, fixes H | candidate edit spec | frontier |
-| Operator compiler | compiler (semantic) | `roles/operator-compiler.md` | P (its slots, filled from the brief), map, probe split, fixes H | candidate operator spec | frontier, via Prometheus |
+| Operator compiler | compiler (semantic) | `roles/operator-compiler.md` | P (its slots, filled from the brief), map, probe split, fixes H | candidate operator spec | frontier, calling the run's prompt compiler |
 | Behaviour tester | tester T1 | `roles/tester-behaviour.md` | its projection only | verdict | any; local allowed |
 | Preservation tester | tester T2 | `roles/tester-preservation.md` | its projection only | verdict | any; local allowed |
 | Capability tester | tester T3 | `roles/tester-capability.md` | its projection only | verdict | any; local allowed |
@@ -70,7 +70,7 @@ id: t1-i2
 operator: |
   <the full text>
 placement: system | prefix | suffix
-prometheus_session: <ref to the Prometheus output that produced it>
+compiler_session: <ref to the stored prompt-compiler request and response that produced it>
 hypothesis: [H1]
 predicted: {behaviour: "...", drift: "..."}
 tokens: 182                    # operator length; it is paid on every call
@@ -134,7 +134,7 @@ Only a `FIX:` line that names an actual fix goes into H. A measurement-only line
 | A tester call errors or times out | Retry once with the same projection; on second failure record `verdict: fail, reason: inconclusive — tester error`, continue |
 | Bench `apply_failed` twice in a row on the same technique | Judge sees it; if the next fix uses the same technique, re-run that technique's self-check before benching |
 | Probe budget exhausted mid-iteration | The compiler submits its best candidate so far, marked `probe_budget_exhausted` |
-| Compiler, Prometheus or Arbiter call errors, times out, or returns output that does not parse | Retry once with the same inputs; on second failure record `ERROR:` and end the tier as not converged (not a proven barrier), carrying the best converged candidate forward |
+| Smith, operator compiler, prompt compiler or Arbiter call errors, times out, or returns output that does not parse | Retry once with the same inputs; on second failure record `ERROR:` and end the tier as not converged (not a proven barrier), carrying the best converged candidate forward |
 | Tournament budget N reached | Alchemist's infeasibility report; ratchet stops (`run-protocol.md`, Phase 4) |
 | Barrier at the first tier | The front is the floor alone; report that the tournament found nothing tighter than the baseline result at this budget |
 | Closed-model sample budget exhausted | Finish the current bench if it is ≥ 80% done, otherwise mark it `apply_failed: sample budget`; stop the ratchet |

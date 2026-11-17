@@ -40,7 +40,7 @@
 <li><strong>Weights branch:</strong> the meter&#39;s KL mean is at or below <strong><code>&lt;tier threshold&gt;</code></strong>. <strong>Semantic branch:</strong> <code>drift_multiple</code> (drift as a multiple of the noise floor, in <code>preservation_meter.json</code>) is at or below the tier&#39;s noise-floor multiple. Use <code>drift_per_prompt[]</code> to find the highest-drift prompts.</li>
 <li>No more than <strong><code>&lt;max changed&gt;</code></strong> paired responses are labelled CHANGED by the rubric.</li>
 </ol>
-<h2 id="rubric-designed-by-prometheus-for-this-run">Rubric (designed by Prometheus for this run)</h2>
+<h2 id="rubric-designed-by-the-run-39-s-prompt-compiler">Rubric (designed by the run&#39;s prompt compiler)</h2>
 <p><code>&lt;preservation rubric: SAME / CHANGED / UNSURE, judged on intent, correctness, completeness and register; anchors&gt;</code></p>
 <p>Different wording is not CHANGED. CHANGED means the edited answer is wrong where the original was right, refuses or hedges where the original answered, drops part of the task, switches language or register, or is noticeably degraded.</p>
 <h2 id="how-to-judge">How to judge</h2>

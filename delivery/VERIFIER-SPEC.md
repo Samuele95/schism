@@ -6,7 +6,7 @@ Shape: hybrid. The skill entry (SKILL.md) is an orchestrating persona for a Shap
 
 **Whole package**
 1. Every path cited in any file exists in the package (`cards/*.md`, `roles/*.md`, `references/*.md`, `assets/*`).
-2. The three-skill division holds everywhere: no file tells an agent to write a prompt by hand (prompts go to Prometheus) or to run its own tournament loop outside Alchemist.
+2. The three-skill division holds everywhere: no file tells an agent to write a prompt inline (prompts come from a recorded call to the run's prompt compiler, Prometheus or any other map from a prompt to a prompt) or to run its own tournament loop outside Alchemist.
 3. The semantic-branch scope (behaviour and style traits) appears in `cards/semantic-branch.md` and `roles/operator-compiler.md`, consistently worded.
 4. The four splits and who may read each are consistent across SKILL.md, run-protocol, coordination and every role.
 5. The verification budget is stated once (SKILL.md, ground rules) at milestone level. No card or role adds per-candidate testing beyond bench and testers.

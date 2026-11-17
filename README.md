@@ -59,11 +59,11 @@ Every operation is on the record. A run leaves a report whose first sentence is 
 
 ## The family
 
-Schism owns the method: the cards, the contrast design, the map and its gate, the floor, the vault, the ledger. It leans on two siblings for the rest. **Alchemist** runs the search — compiler, isolated testers, a judge with memory — until the candidates converge or a barrier is proven. **[Prometheus](https://github.com/Samuele95/prometheus)** writes every prompt the run uses, from the judges' rubrics to the operators on the closed-model side; a prompt written by hand inside a run is treated as a defect, with the measurement prompts and the floor's own operator the only exceptions. **Weight Space Programming**, when it is installed, takes over general reading and writing of weights.
+Schism owns the method: the cards, the contrast design, the map and its gate, the floor, the vault, the ledger. It leans on two siblings for the rest. **Alchemist** runs the search — compiler, isolated testers, a judge with memory — until the candidates converge or a barrier is proven. A **prompt compiler** writes every prompt the run uses, from the judges' rubrics to the operators on the closed-model side. Schism defines it by what it does rather than what it is: any map from a prompt to a prompt. It can be a meta-prompting skill such as **[Prometheus](https://github.com/Samuele95/prometheus)**, the recommended one, a plain call to an LLM asking for that kind of prompt, or anything else that turns prompt text into prompt text; the brief names it, and every call is kept on the record. On the closed-model side the tournament simply iterates it — each new operator is the compiler applied to the last one and the judge's fixes. A prompt written inline inside a run, outside a recorded compiler call, is treated as a defect, with the measurement prompts and the floor's own operator the only exceptions. **Weight Space Programming**, when it is installed, takes over general reading and writing of weights.
 
 ## Running it
 
-Install by placing [`schism/`](schism/) in the skills folder your agent loads from, next to `alchemist/` and `prometheus/`. Then tell the agent what you want gone, from which model, and whether you will be there to answer questions:
+Install by placing [`schism/`](schism/) in the skills folder your agent loads from, next to `alchemist/`, and choose a prompt compiler — `prometheus/` if you have it, otherwise a plain LLM call. Then tell the agent what you want gone, from which model, and whether you will be there to answer questions:
 
 ```text
 Use Schism to reduce slop in Qwen3-4B-Instruct. I'm here, ask me if something is ambiguous.

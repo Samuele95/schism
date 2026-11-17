@@ -24,7 +24,7 @@ Five phases. [C-20]
 
 | Phase | Purpose | In | Out | Over when |
 |---|---|---|---|---|
-| 1 Frame | Turn the behaviour into a run brief. [C-21] | the behaviour, the model | brief.yaml: branch, model, contrast pair, four splits, meters, budgets, preservation tiers; behaviour and preservation rubrics from Prometheus; confound audit [C-21, C-22, C-51] | the brief is complete, the vault is sealed and hashed, the ledger holds the Frame entry; on present deployment the user confirms the brief [C-21] |
+| 1 Frame | Turn the behaviour into a run brief. [C-21] | the behaviour, the model | brief.yaml: branch, model, contrast pair, four splits, meters, budgets, preservation tiers; behaviour and preservation rubrics from the prompt compiler; confound audit [C-21, C-22, C-51] | the brief is complete, the vault is sealed and hashed, the ledger holds the Frame entry; on present deployment the user confirms the brief [C-21] |
 | 2 Map | Find where the behaviour lives, and whether there is anything to switch off. [C-24] | fit and probe splits; a mapping budget [C-42] | `map/report.md`: hypotheses with evidence, and a feasibility verdict [C-24, C-25] | a verdict: switchable or diffuse → Phase 3; absent → the run stops with a report; inconclusive → Phase 3 as diffuse [C-25] |
 | 3 Floor | Run the baseline pipeline. [C-26] | the dev split, the standard meters | Pareto trials; candidate zero; reference rates [C-26] | candidate zero is chosen and the behaviour target is fixed from it [C-30] |
 | 4 Tournament | Search for a better candidate, tier by tier. [C-28] | candidate zero; the role prompts | converged candidates (the front), or a proven barrier [C-28] | every tier converged, or a barrier stopped the ratchet [C-28] |
@@ -41,7 +41,7 @@ Five phases. [C-20]
 |---|---|
 | Schism | the method: technique cards, contrast design, the map, the feasibility gate, the floor, the vault, the front, the ledger, export [C-13] |
 | Alchemist (required) | the search: compiler → isolated testers → judge with history, to convergence or a proven barrier [C-13] |
-| Prometheus (required) | every prompt: rubrics, role prompts, operator candidates [C-13, C-14] |
+| Prompt compiler (required; Prometheus recommended) | every prompt: rubrics, role prompts, operator candidates. Any map from a prompt to a prompt: Prometheus, a plain LLM call, or anything else [C-13, C-14, C-74] |
 | WSP — Weight Space Programming (optional) | general weight reading and writing, when installed [C-13] |
 
 ## 7. Ground rules
@@ -51,7 +51,7 @@ Five phases. [C-20]
 - **Budgets are part of the experiment**, because a result without its budget is not interpretable. [C-10]
 - **Implement, then self-check, then trust**: a failed self-check stops that technique. [C-11]
 - **The ledger is the run's memory**: reread at every phase and after any context compaction. [C-12]
-- **Every prompt goes through Prometheus**; a hand-written prompt inside a run is a defect. [C-14]
+- **Every prompt comes from the prompt compiler**, whatever implements it; a prompt written inline inside a run is a defect. [C-14, C-74]
 
 ## 8. Roles
 
@@ -59,7 +59,7 @@ Five phases. [C-20]
 |---|---|---|---|
 | Cartographer | maps where the behaviour lives; gives the feasibility verdict; read-only on the model [C-24, C-39] | the brief's behaviour, branch, model, contrast blocks; fit and probe splits; never judges, rubrics, dev or vault [C-39] | `map/report.md` |
 | Smith | the compiler on the weights branch: one candidate weight edit per call [C-36] | the target, the map, the cards, the probe split, the judge's fixes; never verdicts, dev or vault [C-36] | an edit spec |
-| Operator compiler | the compiler on the semantic branch: one candidate operator per call, designed through Prometheus [C-14, C-36] | the target, the map, the probe split, the judge's fixes [C-36] | an operator spec |
+| Operator compiler | the compiler on the semantic branch: one candidate operator per call, produced by the run's prompt compiler [C-14, C-36, C-74] | the target, the map, the probe split, the judge's fixes [C-36] | an operator spec |
 | Behaviour tester (T1) | checks the behaviour is gone [C-37] | its projection: dev bad-condition responses, rubric, target [C-37] | a verdict |
 | Preservation tester (T2) | checks everything else is unchanged [C-37] | neutral response pairs, the preservation meter, the tier's threshold [C-37] | a verdict |
 | Capability tester (T3) | checks the model can still do what it could [C-37] | the capability task's items and outputs [C-37] | a verdict |
@@ -95,8 +95,8 @@ Five phases. [C-20]
 
 ## 11. Install and run
 
-- **Requirements** [C-60]: skills `schism`, `alchemist`, `prometheus`; WSP optional. Weights branch: a machine that loads the model in bf16 or 4-bit, Python ≥ 3.10, torch, transformers, peft, accelerate, optuna, scikit-learn, datasets; optional bitsandbytes, lm-eval. Semantic branch: a headless LLM agent invocation, a local embedding model the agent chooses, sentence-transformers, scikit-learn.
-- **Install**: place `schism/` next to `alchemist/` and `prometheus/` in the agent's skills folder. [C-60]
+- **Requirements** [C-60]: skills `schism`, `alchemist`; a prompt compiler (`prometheus` recommended, or a plain LLM call); WSP optional. Weights branch: a machine that loads the model in bf16 or 4-bit, Python ≥ 3.10, torch, transformers, peft, accelerate, optuna, scikit-learn, datasets; optional bitsandbytes, lm-eval. Semantic branch: a headless LLM agent invocation, a local embedding model the agent chooses, sentence-transformers, scikit-learn.
+- **Install**: place `schism/` next to `alchemist/` (and `prometheus/`, if it is the compiler) in the agent's skills folder. [C-60]
 - **Start a run** [C-61]: interactive ("Use Schism to reduce slop in Qwen3-4B-Instruct. I'm here, ask me if something is ambiguous."); unattended overnight (write the brief, set `deployment: unattended` and `approved: true`); closed model ("Use Schism on the semantic branch to make this model less sycophantic.").
 - **First run**: a calibration run on a small open model (about 1–2B parameters) with the slop preset. [C-62]
 - **Models**: the strongest available model, with extended thinking, for the orchestrator, Cartographer, Smith, Arbiter and Goodhart tester; the other testers may run locally at temperature 0 after calibration. [C-63]
@@ -142,7 +142,7 @@ Five phases. [C-20]
 |---|---|---|---|
 | C-01 | Schism changes or inspects a language model's behaviour, such as slop, sycophancy, verbosity, humor, tone or looping. | schism/SKILL.md › description | examples, not a closed list |
 | C-02 | It works through contrast pairs, activation geometry and weight edits (directional ablation, MPOA, ARA, WSP-style sparse surgery), or, on closed models, through prompt operators measured in embedding space. | schism/SKILL.md › description | |
-| C-03 | The search runs as an Alchemist tournament, every prompt is written through Prometheus, and results are judged once on a sealed vault against a baseline floor. | schism/SKILL.md › description | |
+| C-03 | The search runs as an Alchemist tournament, every prompt comes from a prompt compiler (any map from a prompt to a prompt; Prometheus by default), and results are judged once on a sealed vault against a baseline floor. | schism/SKILL.md › description | |
 | C-04 | Use it to abliterate or reduce or remove a behaviour, to find where a behaviour lives in a model, or to steer a closed model's style; it is not for training or fine-tuning. | schism/SKILL.md › description | |
 | C-05 | The agent changes one behaviour while leaving the rest of the model as it was, and can prove both halves of that claim. | schism/SKILL.md › intro | |
 | C-06 | No toolkit is installed: the technique cards describe every method precisely enough that the agent implements it itself; the package contains no code. | schism/SKILL.md › intro; USAGE.md › What you have | |
@@ -152,15 +152,15 @@ Five phases. [C-20]
 | C-10 | Budgets (forward passes, tournament iterations, closed-model samples) are counted in the ledger, because a result without its budget is not interpretable. | schism/SKILL.md › Ground rules | |
 | C-11 | Every technique the agent implements passes its card's self-check before its output is used, then lives in the workbench; a failed self-check is a stop. | schism/SKILL.md › Ground rules | |
 | C-12 | The append-only ledger is the run's memory, reread at the start of every phase and after any context compaction. | schism/SKILL.md › Ground rules | |
-| C-13 | Schism owns the method, Alchemist (required) owns the search, Prometheus (required) owns every prompt; WSP is optional. | schism/SKILL.md › family table; README.md | |
-| C-14 | A prompt written by hand inside a run is a defect: specs go to Prometheus. Measurement stimuli and the floor operator are the exceptions. | schism/SKILL.md › intro | |
+| C-13 | Schism owns the method, Alchemist (required) owns the search, a prompt compiler (required; Prometheus recommended) owns every prompt; WSP is optional. | schism/SKILL.md › family table; README.md | |
+| C-14 | A prompt written inline inside a run, outside a recorded compiler call, is a defect: specs go to the prompt compiler. Measurement stimuli and the floor operator are the exceptions. | schism/SKILL.md › intro | |
 | C-15 | On the weights branch (open-weight models, local or remote GPU) the edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter. | schism/SKILL.md › Two branches | weights branch |
 | C-16 | On the semantic branch (closed models) the edit is a prompt operator and every geometric quantity is measured on embeddings of sampled responses. | schism/SKILL.md › Two branches | semantic branch |
 | C-17 | A semantic-branch result is "this model with this operator", never a change to the model; it costs the operator's tokens on every call and may not survive a model update. | cards/semantic-branch.md › Scope | semantic branch |
 | C-18 | With a user present, Schism asks at three fixed points (the brief, borderline rubric anchors, the choice from the front); unattended, it never asks. | schism/SKILL.md › Doubt | |
 | C-19 | If the data cannot support a conclusion, the run says so instead of producing a number that looks like one. | schism/SKILL.md › Doubt | |
 | C-20 | A run has five phases: Frame, Map, Floor, Tournament, Seal. | schism/SKILL.md › The run | |
-| C-21 | Frame turns the behaviour into a run brief, has Prometheus design the behaviour and preservation rubrics, audits the design for confounds and Goodhart risk, and seals the vault. | schism/SKILL.md › The run; references/run-protocol.md › Phase 1 | |
+| C-21 | Frame turns the behaviour into a run brief, has the prompt compiler design the behaviour and preservation rubrics, audits the design for confounds and Goodhart risk, and seals the vault. | schism/SKILL.md › The run; references/run-protocol.md › Phase 1 | |
 | C-22 | The behaviour is restated as two observable conditions, one sentence each: what responses look like with it and without it. | references/run-protocol.md › Phase 1 | |
 | C-23 | Default split sizes: fit 400 + 400; probe 100 per condition plus 50 neutral; dev and vault 100 per condition plus 100 neutral each. | references/run-protocol.md › Phase 1 | defaults |
 | C-24 | Map: the Cartographer captures activations, reads weights and attention, and writes a localisation hypothesis with evidence. | schism/SKILL.md › The run | weights branch; embedding geometry on the semantic branch |
@@ -188,7 +188,7 @@ Five phases. [C-20]
 | C-46 | A direction is the difference of the mean stream between bad and good prompts at the decision token: a contrast between two datasets at one token, not a concept. | cards/directions.md | weights branch |
 | C-47 | The Weight Space Programming paper (Takehi et al., 2026) reports early results on one model family, including a looping fix on Qwen3.5-0.8B touching 0.016% of weights, and two limits Schism keeps as rules: weights alone did not reveal sycophancy without attention patterns, and editing removed an obstacle but could not add a missing ability. | cards/feasibility-and-locate.md › What WSP showed | a cited paper's results, not Schism's; "early results, one model family"; "whether a frontier LLM can do the same is a hypothesis this run tests" |
 | C-48 | The standard meters are keyword rate, first-token KL, classifier, benchmark and response length; an empty response counts as the behaviour, so silence cannot win. | cards/meters.md | |
-| C-49 | Rubrics are written by Prometheus; testers give pass/fail only, write a reason before every label, and must label all 10 calibration anchors correctly. | cards/llm-judges.md | |
+| C-49 | Rubrics are written by the prompt compiler; testers give pass/fail only, write a reason before every label, and must label all 10 calibration anchors correctly. | cards/llm-judges.md | |
 | C-50 | The Goodhart tester assumes gaming until the evidence says otherwise, and checks for synonym swaps, silence, moved behaviour, canned replies, topic damage and operator leakage. | roles/tester-goodhart.md | |
 | C-51 | Choosing the prompt sets is defining the behaviour; the same-prompts, opposite-instructions pattern cancels topic exactly; a five-question confound audit is run at Frame. | cards/contrast-design.md | |
 | C-52 | Presets exist for refusals, slop, sycophancy, humor, verbosity and emotions, built on public Hugging Face datasets. | cards/contrast-design.md › Presets | |
@@ -211,6 +211,7 @@ Five phases. [C-20]
 | C-69 | The test plan asks for a head-to-head against the baseline pipeline on two behaviours and two model sizes before drawing a general conclusion: "one run is an anecdote". | delivery/EMPIRICAL-TEST.md › B | |
 | C-70 | The package was designed with Prometheus. | README.md | |
 | C-71 | When behaviour and preservation keep trading places, the Arbiter changes where or how the edit acts, not how much. | roles/arbiter.md › Patterns | |
+| C-74 | The prompt compiler is any map from a prompt (or a request for one) to a prompt: a meta-prompting skill such as Prometheus, a plain LLM call asking for that kind of prompt, or anything else. The brief names it, every call is stored, and on the semantic branch each operator is the compiler applied to the last one and the judge's fixes. | schism/SKILL.md › family; roles/operator-compiler.md | |
 | C-73 | Schism is published at github.com/Samuele95/schism under the MIT licence; its author is Samuele Stronati. | the author, 17 Nov 2026 (not in the package) | |
 | C-72 | Mapping is where Schism extends the baseline: the baseline never asks where a behaviour lives; it edits a band and lets the search sort it out. | cards/feasibility-and-locate.md | |
 
