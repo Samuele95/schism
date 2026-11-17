@@ -7,7 +7,7 @@
 ## Requirements
 
 - **Skills:** `schism` and `alchemist` installed where the driving agent can load them. The WSP skill is optional; when present, Schism hands general weight reading and writing to it.
-- **A prompt compiler:** anything that turns a prompt, or a request for one, into a prompt. `prometheus` is the recommended one; a plain call to a capable LLM also works. Name it in the brief's `compiler` block.
+- **A prompt compiler:** anything that turns a prompt, or a request for one, into a prompt. [Prometheus](https://samuele95.github.io/prometheus/) is the recommended one; a plain call to a capable LLM also works. Name it in the brief's `compiler` block.
 - **Weights branch:** a machine that can load the model in bf16 (or 4-bit), with Python ≥ 3.10 and `torch`, `transformers`, `peft`, `accelerate`, `optuna`, `scikit-learn`, `datasets`. Optional: `bitsandbytes` (4-bit), `lm-eval` (capability meter).
 - **Semantic branch:** a headless LLM agent invocation (the sampling command) and a local embedding model, which the agent chooses. `sentence-transformers` and `scikit-learn`.
 

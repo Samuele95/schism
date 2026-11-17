@@ -184,7 +184,7 @@ pages.forEach((p, i) => {
     });
     body = `<h1>${esc(p.title)}</h1>\n` + claimify(parts.join('\n'));
     if (p.out === 'index.html') {
-      body += `\n<h2 id="get-it">Get it</h2>\n<p data-claim="C-73">Schism lives at <a href="${REPO}">github.com/Samuele95/schism</a>, under the MIT licence, by Samuele Stronati. Install the <code>schism/</code> folder next to Alchemist and choose a prompt compiler: <a href="https://github.com/Samuele95/prometheus">Prometheus</a>, or a plain LLM call; <a href="install.html">install and run</a> has the details.</p>`;
+      body += `\n<h2 id="get-it">Get it</h2>\n<p data-claim="C-73">Schism lives at <a href="${REPO}">github.com/Samuele95/schism</a>, under the MIT licence, by Samuele Stronati. Install the <code>schism/</code> folder next to Alchemist and choose a prompt compiler: <a href="https://samuele95.github.io/prometheus/">Prometheus</a>, or a plain LLM call; <a href="install.html">install and run</a> has the details.</p>`;
       body += `\n<h2 id="contents">In the reading room</h2>\n<ul class="contents">${pages.slice(1).map((q) => `<li><a href="${q.out}">${esc(q.title)}</a></li>`).join('')}</ul>`;
     }
     if (p.out === 'branches.html') {
