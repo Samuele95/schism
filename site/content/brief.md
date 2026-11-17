@@ -1,14 +1,14 @@
 # Brief — what the Schism site may say
 
-Source: `schism-package/` (README.md, USAGE.md, schism/, delivery/). Every statement in sections 1–12 cites claim ids from section 13. Terms are defined in section 12 the first time they matter; the site uses the package's own words for them.
+Source: the repository (README.md, USAGE.md, CHANGELOG.md, CITATION.cff, schism/, delivery/). Every statement in sections 1–12 cites claim ids from section 13. Terms are defined in section 12 the first time they matter; the site uses the package's own words for them.
 
 ## 1. In one sentence
 
-Schism injects, tunes or ablates one behaviour of a language model, by intervening in its weight space and on its internal representations, while leaving the rest of it as it was; and it proves both halves of that claim. [C-01, C-05, C-75]
+Schism injects, tunes or ablates one behaviour of a language model, by intervening in its weight space and on its internal representations or, on closed models, through a prompt operator, while leaving the rest of it as it was; and it proves both halves of that claim. [C-01, C-02, C-05, C-16, C-75]
 
 ## 2. In one paragraph
 
-Schism is an agent skill, a method written as technique cards and role prompts that a capable LLM agent carries out itself: the package contains no code, so the agent implements each technique from its card, self-checks it and keeps it for later runs. [C-06, C-11] It works on one behaviour at a time, such as slop, sycophancy, verbosity, humor, tone or looping, and it can do three things with it. It can ablate a behaviour the model shows, inject one the model shows only when asked so that it becomes the default, or tune how strongly an edit acts, and all three come from the same contrast pair read in one direction or the other. [C-01, C-75, C-76] On an open model the edit is a change to the weights, computed from the model's internal representations; on a closed one it is a prompt operator measured in embedding space. [C-02, C-15, C-16] The search runs as an Alchemist tournament, every prompt comes from a prompt compiler, and the results are judged once on a sealed vault against a baseline floor. [C-03, C-74] It serves LLM ablation, customisation without a fine-tuning dataset, and locating a behaviour ("where does X live in this model"), while gradient fine-tuning on a corpus and the editing of facts or knowledge are outside it. [C-04, C-77]
+Schism is an agent skill, a method written as technique cards and role prompts that a capable LLM agent carries out itself: the package contains no code, so the agent implements each technique from its card, self-checks it and keeps it for later runs. [C-06, C-11] It works on one behaviour at a time, such as slop, sycophancy, verbosity, humor, tone or looping, and it can do three things with it. Ablating and injecting read the same contrast pair in opposite directions, removing a behaviour the model shows or making the default one it shows only when asked, and tuning sets the strength of either. [C-01, C-75, C-76] On an open model the edit is a change to the weights, computed from the model's internal representations; on a closed one it is a prompt operator measured in embedding space. [C-02, C-15, C-16] The search runs as an Alchemist tournament, every prompt comes from a prompt compiler, and the results are judged once on a sealed vault against a baseline floor. [C-03, C-74] It serves LLM ablation, customisation without a fine-tuning dataset, and locating a behaviour ("where does X live in this model"), while gradient fine-tuning on a corpus and the editing of facts or knowledge are outside it. [C-04, C-77]
 
 ## 3. What a run hands back
 
@@ -34,7 +34,7 @@ Five phases. [C-20]
 
 The **weights branch** is for open-weight models loaded locally or on a remote GPU. There the edit is a change to the matrices that write into the residual stream, stored as a LoRA adapter on a scratch copy and never written over the original, and preservation is measured as first-token KL on neutral prompts. [C-15, C-07, C-48]
 
-The **semantic branch** is for closed models, which have no weights to touch. The edit becomes a prompt operator, every geometric quantity is measured on embeddings of sampled responses, and preservation is drift expressed as a multiple of the sampling noise floor, which is why results are worded "with this operator" and never as a change to the model. [C-16, C-17, C-58]
+The **semantic branch** is for closed models, which have no weights to touch. The edit becomes a prompt operator, every geometric quantity is measured on embeddings of sampled responses, and preservation is drift expressed as a multiple of the sampling noise floor. Because nothing in the model changes, results are worded "with this operator" and never as a change to the model. [C-16, C-17, C-58]
 
 On both branches the same three operations apply: ablating a behaviour, injecting one the model shows only when asked, or tuning the strength of the edit. [C-75, C-76]
 
@@ -63,9 +63,9 @@ On both branches the same three operations apply: ablating a behaviour, injectin
 | Cartographer | maps where the behaviour lives; gives the feasibility verdict; read-only on the model [C-24, C-39] | the brief's behaviour, branch, model, contrast blocks; fit and probe splits; never judges, rubrics, dev or vault [C-39] | `map/report.md` |
 | Smith | the compiler on the weights branch: one candidate weight edit per call [C-36] | the target, the map, the cards, the probe split, the judge's fixes; never verdicts, dev or vault [C-36] | an edit spec |
 | Operator compiler | the compiler on the semantic branch: one candidate operator per call, produced by the run's prompt compiler [C-14, C-36, C-74] | the target, the map, the probe split, the judge's fixes [C-36] | an operator spec |
-| Behaviour tester (T1) | checks the behaviour is gone [C-37] | its projection: dev bad-condition responses, rubric, target [C-37] | a verdict |
-| Preservation tester (T2) | checks everything else is unchanged [C-37] | neutral response pairs, the preservation meter, the tier's threshold [C-37] | a verdict |
-| Capability tester (T3) | checks the model can still do what it could [C-37] | the capability task's items and outputs [C-37] | a verdict |
+| Behaviour tester (T1) | checks that the rate of BAD responses is at or below the target [C-79] | its projection: dev bad-condition responses, rubric, target [C-37] | a verdict |
+| Preservation tester (T2) | checks that no neutral response changed beyond the tier's threshold [C-79] | neutral response pairs, the preservation meter, the tier's threshold [C-37] | a verdict |
+| Capability tester (T3) | checks that accuracy on the capability task has not dropped by more than allowed [C-79] | the capability task's items and outputs [C-37] | a verdict |
 | Goodhart tester (T4) | checks the behaviour was removed, not gamed [C-50] | the whole bundle and the edit [C-37, C-50] | a verdict |
 | Arbiter | the judge: diagnoses failures across all four constraints and proposes one fix [C-38, C-71] | verdicts, full history, the candidate's recipe; never bundles or raw responses [C-38] | diagnosis and one fix |
 
@@ -110,7 +110,7 @@ On both branches the same three operations apply: ablating a behaviour, injectin
 
 | Term | Definition |
 |---|---|
-| behaviour | one observable trait of a model's responses, defined by a pair of sentences: what responses look like with it (bad) and without it (good) [C-22] |
+| behaviour | one observable trait of a model's responses, defined by a pair of sentences: bad, the side the edit moves away from, and good, the side it moves toward (the behaviour's absence when ablating, the instructed behaviour when injecting) [C-22, C-75] |
 | contrast pair | the two prompt sets that define the behaviour; "choosing the prompt sets is defining the behaviour" [C-51] |
 | residual stream | the running vector each layer reads and adds to; components never talk directly, everything passes through it [C-59] |
 | writer | a matrix that puts something into the residual stream (attention output, MLP down-projection) [C-59] |
@@ -212,14 +212,16 @@ On both branches the same three operations apply: ablating a behaviour, injectin
 | C-67 | The workbench lives outside the run folder, so a technique checked once serves every later run on the same machine. | references/run-protocol.md › Run folder | |
 | C-68 | The package ships its own verifiers and an empirical test plan; nothing in that plan was run during design. | README.md; delivery/EMPIRICAL-TEST.md | |
 | C-69 | The test plan asks for a head-to-head against the baseline pipeline on two behaviours and two model sizes before drawing a general conclusion: "one run is an anecdote". | delivery/EMPIRICAL-TEST.md › B | |
-| C-70 | The package was designed with Prometheus. | README.md | |
+| C-70 | The package was designed with Prometheus. | delivery/AUDIT.md | |
 | C-71 | When behaviour and preservation keep trading places, the Arbiter changes where or how the edit acts, not how much. | roles/arbiter.md › Patterns | |
-| C-75 | One contrast pair, symmetric: ablate when GOOD is the behaviour's absence, inject when GOOD is a behaviour the model shows only when instructed, tune by the strength of the edit (λ, ARA's weights, the operator's wording), with the preservation tiers bounding it. | schism/SKILL.md › Three operations; cards/contrast-design.md | |
-| C-76 | Injection makes the model do by default what it already does on request; it cannot give it a behaviour it never produces. ARA and the semantic branch inject directly; directional ablation injects with λ < 0. | schism/SKILL.md › Three operations; cards/directional-ablation.md | |
-| C-77 | No fine-tuning dataset is needed: the edit comes from two sets of prompts and the model's own activations, with no labelled targets and no training corpus; ARA still fits its adapter by optimisation. Facts and knowledge are out of scope. | schism/SKILL.md › Three operations | |
-| C-74 | The prompt compiler is any map from a prompt (or a request for one) to a prompt: a meta-prompting skill such as Prometheus, a plain LLM call asking for that kind of prompt, or anything else. The brief names it, every call is stored, and on the semantic branch each operator is the compiler applied to the last one and the judge's fixes. | schism/SKILL.md › family; roles/operator-compiler.md | |
-| C-73 | Schism is published at github.com/Samuele95/schism under the MIT licence; its author is Samuele Stronati. | the author, 17 Nov 2026 (not in the package) | |
 | C-72 | Mapping is where Schism extends the baseline: the baseline never asks where a behaviour lives; it edits a band and lets the search sort it out. | cards/feasibility-and-locate.md | |
+| C-73 | Schism is published at github.com/Samuele95/schism under the MIT licence; its author is Samuele Stronati. | the author, 17 Nov 2026 (not in the package) | |
+| C-74 | The prompt compiler is any map from a prompt (or a request for one) to a prompt: a meta-prompting skill such as Prometheus, a plain LLM call asking for that kind of prompt, or anything else. The brief names it, every call is stored, and on the semantic branch each operator is the compiler applied to the last one and the judge's fixes. | schism/SKILL.md › family; roles/operator-compiler.md | |
+| C-75 | One contrast pair, symmetric: ablate when GOOD is the behaviour's absence, inject when GOOD is a behaviour the model shows only when instructed, tune by the strength of the edit (λ, ARA's weights, the operator's wording), with the preservation tiers bounding it. | schism/SKILL.md › Three operations; cards/contrast-design.md | |
+| C-76 | Injection makes the model do by default what it already does on request; it cannot give it a behaviour it never produces. ARA and the semantic branch inject directly, pulling the default toward the instructed answers; directional ablation injects the same way it ablates, removing the default side's component (BAD = default, λ ≥ 1). | schism/SKILL.md › Three operations; cards/directional-ablation.md | |
+| C-77 | No fine-tuning dataset is needed: on open weights the edit comes from two sets of prompts and the model's own activations, its targets being the model's own outputs on the GOOD prompts; on closed models it is an operator measured on sampled answers. There is no training corpus, though ARA still fits its adapter by optimisation. Facts and knowledge are out of scope. | schism/SKILL.md › Three operations | |
+| C-78 | The first release is 0.1.0, dated 17 Nov 2026. | CHANGELOG.md; CITATION.cff | |
+| C-79 | The behaviour tester passes a candidate iff the rate of responses judged BAD is at or below the target; the preservation tester iff no neutral response changed beyond the tier's threshold; the capability tester iff accuracy has not dropped by more than the allowed amount. | cards/llm-judges.md › Who writes the rubric; roles/tester-capability.md | |
 
 ## 14. Not claimable
 
@@ -230,7 +232,7 @@ On both branches the same three operations apply: ablating a behaviour, injectin
 - "Changes the model" for a semantic-branch result. [C-17]
 - "Guaranteed", "provably safe", "lossless". Preservation is measured against tier thresholds, with intervals. [C-29, C-33]
 - "Uncensored", "jailbreak", or any framing of the method around defeating safety behaviour. The package's own examples are style and quality behaviours. [C-01]
-- Any version number or release date. The package states none. (Address, licence and author: C-73.)
+- Any version number or release date other than the first release, 0.1.0 of 17 Nov 2026 [C-78]. (Address, licence and author: C-73.)
 
 ## 15. Open questions
 
@@ -238,4 +240,4 @@ On both branches the same three operations apply: ablating a behaviour, injectin
 2. **Refusals.** The contrast card ships a refusals preset and the meters card a default refusal marker list, but SKILL.md's examples do not include refusals. Should the film name refusals at all? Proposed reading: no; the film uses the SKILL.md examples, and the reading room shows the cards as written.
 3. **Alchemist's invariants I1–I5** are referenced but defined in the Alchemist skill, not in this package. The site can state I1's content (the compiler sees fixes, never verdicts) and nothing more about the others.
 4. **The WSP paper** is cited as "Takehi et al., 2026" with no title or address. The site can name it only as the package does.
-5. **A version or name for this edition** ("v2" or otherwise). The package states none.
+5. ~~**A version or name for this edition.**~~ Settled by the author on 17 Nov 2026: the first release is 0.1.0 [C-78].

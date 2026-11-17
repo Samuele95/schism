@@ -10,7 +10,7 @@ Removing v from what a writer emits, for every input z, moves the projector insi
 W′ = W − λ · v (vᵀW)              vᵀW′z = (1 − λ) · vᵀWz
 ```
 
-λ = 0: nothing. 0 < λ < 1: the component is weakened, not removed (tuning). λ < 0: the writer writes more along v, which is how this edit injects a behaviour when v points from the default toward it (`SKILL.md`, Three operations). λ = 1: the writer can no longer write along v. λ > 1: it writes *against* v, pushing back the v that the embedding and earlier, unedited writers already put on the stream, which an edit at this layer cannot erase. Too far, and the stream ends negative along v, a state the model never saw in training; the preservation meter catches that.
+λ = 0: nothing. 0 < λ < 1: the component is weakened, not removed (tuning). λ < 0: the writer writes more of what it already writes along v, which amplifies the BAD side of the pair; to inject, put the default on the BAD side and use λ ≥ 1, as for ablation (`SKILL.md`, Three operations). λ = 1: the writer can no longer write along v. λ > 1: it writes *against* v, pushing back the v that the embedding and earlier, unedited writers already put on the stream, which an edit at this layer cannot erase. Too far, and the stream ends negative along v, a state the model never saw in training; the preservation meter catches that.
 
 Stored as a rank-1 LoRA (`cards/lora-lifecycle.md`, lora_alpha = r so the scale is 1):
 

@@ -19,7 +19,8 @@ url: "https://samuele95.github.io/schism/"
 keywords:
   - large language models
   - abliteration
-  - model editing
+  - behaviour editing
+  - directional ablation
+  - weight-space intervention
   - interpretability
-  - activation steering
   - agent skills

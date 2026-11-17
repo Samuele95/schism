@@ -24,7 +24,7 @@ The workbench lives outside the run folder so that a technique checked once serv
 
 ## Phase 1 — Frame
 
-1. **Restate the behaviour** as two observable conditions: what responses look like with it (*bad*) and without it (*good*). If you cannot write both in one sentence each, the behaviour is not yet defined; on present deployment, ask; unattended, take the narrowest reading and record it.
+1. **Restate the behaviour** as two observable conditions: *bad*, the side the edit moves away from, and *good*, the side it moves toward — the behaviour and its absence when ablating, the model's default and the instructed behaviour when injecting (`SKILL.md`, Three operations). If you cannot write both in one sentence each, the behaviour is not yet defined; on present deployment, ask; unattended, take the narrowest reading and record it.
 2. **Pick the branch and the model.** Weights if the model loads locally; semantic otherwise. Record model id, revision and dtype.
 3. **Build the contrast pair and the four splits** (`cards/contrast-design.md`). Default sizes: fit 400 + 400, probe 100 per condition plus 50 neutral, dev 100 per condition plus 100 neutral, vault 100 per condition plus 100 neutral. Seal the vault: write it, hash it, and from then on read only the hash.
 4. **Choose the meters.** The standard meters (`cards/meters.md`) always run, because they are the floor's objectives and the head-to-head's common currency. LLM judges (`cards/llm-judges.md`) run as testers in Phase 4.

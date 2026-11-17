@@ -32,11 +32,11 @@ Every run is built on one contrast pair, two sets of prompts that differ only in
 
 | Operation | The contrast | What changes in the model |
 |---|---|---|
-| **Ablate** | the behaviour the model shows, against its absence | the component that carries the behaviour is removed from what the edited layers write |
-| **Tune** | the same pair, with the strength of the edit as the variable | the component is weakened by as much as the preservation thresholds allow, and the front shows what each strength costs |
-| **Inject** | the model's default, against a behaviour it shows when instructed | the default outputs are pulled toward the instructed ones, so the instructed behaviour becomes the uninstructed one |
+| **Ablate** | the behaviour the model shows, against its absence | outputs on prompts that show the behaviour are moved to where its absence is |
+| **Tune** | either reading of the pair | the strength of the edit is a parameter of every technique; the preservation tiers bound it, and the front shows what each strength costs |
+| **Inject** | the model's uninstructed default, against the behaviour it shows when instructed | the default outputs are moved to where the instructed ones are, so the instructed behaviour becomes the uninstructed one |
 
-Two limits keep these words honest. An edit can make a model do by default what it already does on request, but it cannot give it a behaviour it never produces, and the feasibility gate checks this before anything is cut. And Schism changes how a model behaves, not what it knows: facts and knowledge are outside it. No fine-tuning dataset is involved, since every edit is computed from two sets of prompts and the model's own activations, although the default edit still fits its adapter by optimisation.
+Two limits keep these words honest. An edit can make a model do by default what it already does on request, but it cannot give it a behaviour it never produces, and the feasibility gate checks this before anything is cut. And Schism changes how a model behaves, not what it knows: facts and knowledge are outside it. No fine-tuning dataset is involved: on open weights every edit is computed from two sets of prompts and the model's own activations, on closed models from sampled answers, although the default edit still fits its adapter by optimisation.
 
 ## The operation
 
@@ -48,15 +48,15 @@ It begins with **Frame**, where the behaviour stops being a word and becomes som
 
 **Map** asks where the behaviour lives. The Cartographer reads the residual stream at the moment the model is about to give its first word, reads the weights and the attention that write into it, and returns a hypothesis with its evidence. A feasibility gate follows: if the behaviour can be switched, the run goes on, and if it lives nowhere in particular the operation is called off with the reason on the record, because an edit can remove an obstacle but cannot give a model an ability it never had.
 
-**Floor** is the standard procedure, done properly. The baseline pipeline, Arbitrary-Rank Ablation by default (the method Philipp Emanuel Weidmann developed for [Heretic](https://github.com/p-e-w/heretic)) or classic directional ablation, is searched in full, and its best result becomes candidate zero. Everything after it starts from that mark, so Schism can match the standard procedure or go further, never fall below it.
+**Floor** is the standard procedure, done properly. The baseline pipeline, Arbitrary-Rank Ablation by default (the method Philipp Emanuel Weidmann developed for [Heretic](https://github.com/p-e-w/heretic)) or classic directional ablation, is searched with multi-objective TPE over the standard meters, and its best result becomes candidate zero. Everything after it starts from that mark, so Schism can match the standard procedure or go further, never fall below it.
 
-**Tournament** refines the cut and is described below. **Seal** finally opens the vault: every surviving candidate is scored on it exactly once and set head-to-head against the floor. A number used to choose a candidate always flatters it, and the vault chose nothing, which is why its verdict is the one that counts. A difference is called real only when it clears the vault's own sampling noise, and if all Schism manages is to match the floor at a higher cost, the report says so.
+**Tournament** refines the cut under the rules set out in [the tournament](#the-tournament). **Seal** finally opens the vault: every surviving candidate is scored on it exactly once and set head-to-head against the floor. A number used to choose a candidate always flatters it, and the vault chose nothing, which is why its verdict is the one that counts. A difference is called real only when it clears the vault's own sampling noise, and if all Schism manages is to match the floor at a higher cost, the report says so.
 
 ## The cut
 
 <p align="center"><img src="assets/cut.png" alt="Before: a disc of ordinary answers and a red plume displaced above it along one direction. After: the plume has fallen into the disc; the disc has not moved." width="100%"></p>
 
-The simplest edit shows the idea most clearly. Capture what the model is about to say for prompts with the behaviour and without it, and the two clouds sit apart, the answers with the behaviour displaced along one direction, the difference between the two means. Directional ablation removes exactly that component from what the model writes and nothing else, so every point keeps its other coordinates and the plume falls back into the disc while the disc stays where it was. The same formula with a strength below one only weakens the component, and with a negative strength along the direction from the default to a new behaviour it adds that component instead, which is how the simplest edit tunes and injects.
+The simplest edit shows the idea most clearly. Capture what the model is about to say for prompts with the behaviour and without it, and the two clouds sit apart, the answers with the behaviour displaced along one direction, the difference between the two means. Directional ablation removes that component from what the edited layers write and leaves every other direction as it was, so in its plain form every point keeps its other coordinates and the plume falls back into the disc while the disc stays where it was. With a strength below one it only weakens the component, which is how it tunes, and an injection run uses the same cut with the default on the side being removed, which is how it makes the instructed behaviour the default.
 
 The original weights are never overwritten. The edit lives beside them in an adapter, and the untouched model remains the reference every number is measured against. Most behaviours are less tidy than one direction, which is why the default edit, ARA, assumes no single direction at all and pulls each layer's outputs toward real examples of the target, and why the cards also cover narrower surgery on individual neurons and attention heads. The question is always the one in the figure: what moved, and what didn't.
 
@@ -116,7 +116,7 @@ Schism ships a method and the means to check it, not results. The skill was not 
 | [`site/`](site/) → [`docs/`](docs/) | the website's source and its build, served by GitHub Pages |
 | [`assets/`](assets/) | the banner and figures, drawn by [`assets/src/figures.py`](assets/src/figures.py) |
 
-The website is a single continuous take, scrubbed by scroll and built with three.js, and every sentence on it carries the id of the claim it rests on in [`site/content/brief.md`](site/content/brief.md). Its reading room renders this repository's own files as they are, and visitors without WebGL, or who prefer reduced motion, get the same story as a sequence of stills. To work on it, run `npm ci` and `npm run dev` inside `site/`; `npm run build` regenerates the reading room and writes `docs/`. [`CONTRIBUTING.md`](CONTRIBUTING.md) says how changes to the cards and the site are checked.
+The website is a single continuous take, scrubbed by scroll and built with three.js, and every factual sentence on it carries the id of the claim it rests on in [`site/content/brief.md`](site/content/brief.md). Its reading room renders this repository's own files as they are, and visitors without WebGL, or who prefer reduced motion, get the same story as a sequence of stills. To work on it, run `npm ci` and `npm run dev` inside `site/`; `npm run build` regenerates the reading room and writes `docs/`. [`CONTRIBUTING.md`](CONTRIBUTING.md) says how changes to the cards and the site are checked.
 
 ## Acknowledgements
 
