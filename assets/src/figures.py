@@ -162,7 +162,7 @@ def banner():
 <line x1="100" y1="262" x2="160" y2="262" stroke="{RED}" stroke-width="1.2"/>
 {t(100, 298, 'Decide what your model stops doing, or starts.', 25, BONE)}
 {t(100, 330, 'Prove the rest held.', 25, DIM, SERIF, 'start', 0, 'font-style:italic;')}
-{t(100, 380, 'an agent skill for model-behaviour engineering  ·  weights or prompts  ·  MIT', 12, DIM, MONO, 'start', 0.04)}
+{t(100, 380, 'an agent skill  ·  inject, tune or ablate one behaviour  ·  in the weights or through a prompt  ·  MIT', 12, DIM, MONO, 'start', 0.04)}
 '''
     defs = f'''<linearGradient id="fadeL" x1="0" x2="1"><stop offset="0" stop-color="{GROUND}" stop-opacity="0.35"/>
       <stop offset="0.06" stop-color="{GROUND}" stop-opacity="0.88"/><stop offset="0.44" stop-color="{GROUND}" stop-opacity="0.93"/><stop offset="0.6" stop-color="{GROUND}" stop-opacity="0"/></linearGradient>'''
@@ -258,6 +258,41 @@ def cut():
 </g>
 {t(330, 432, 'Answers with the behaviour sit off the disc, along one direction.', 16, BONE, SERIF, 'middle')}
 {t(950, 432, 'Remove that component. The plume falls; the disc does not move.', 16, BONE, SERIF, 'middle')}
+'''
+    return frame(W, H, body)
+
+
+# ---------------------------------------------------------------- three operations on one contrast
+def operations():
+    W, H = 1280, 470
+    xs = (225, 640, 1055)
+    sp = [Space(x, 292, 13.5, seed=11, n_disc=1000, n_plume=380) for x in xs]
+    a, b, c = sp
+    body = f'''
+{smallcaps(40, 46, 'three operations, one contrast', 16, DIM, 'start', 0.3)}
+{t(W - 40, 46, 'the same pair, read in one direction or the other', 12, DIM, MONO, 'end')}
+{a.ring(10.6, BONE, 0.3, ticks=False)}
+{a.dots(a.plume, REDL, 0.14, 0.5, 1.2)}
+{a.dots(a.disc, BONE, 0.5)}
+{a.dots(a.plume, BONE, 0.6, collapse=1.0)}
+{t(*a.p(0, a.plume_h + 2.6, 0), 'λ = 1', 13, RED, MONO, 'middle')}
+{b.ring(10.6, BONE, 0.3, ticks=False)}
+{b.dots(b.plume, REDL, 0.12, 0.5, 1.2)}
+{b.dots(b.disc, BONE, 0.5)}
+{b.dots(b.plume, REDL, 0.62, collapse=0.55)}
+{b.axis(-1.5, b.plume_h + 1.4, REDL, 1.0, glow=False)}
+{t(*b.p(0, b.plume_h + 2.6, 0), '0 < λ < 1', 13, RED, MONO, 'middle')}
+{c.ring(10.6, BONE, 0.3, ticks=False)}
+{c.dots(c.plume, PHOS, 0.2, 0.5, 1.2)}
+{c.dots(c.disc, BONE, 0.12, 0.4, 1.0)}
+{c.dots(c.disc, PHOS, 0.55, collapse=1.0, y_offset=c.plume_h * 0.82)}
+{t(*c.p(0, c.plume_h + 2.6, 0), 'pull toward GOOD', 13, PHOS, MONO, 'middle')}
+{smallcaps(xs[0], 400, 'ablate', 17, BONE, 'middle')}
+{smallcaps(xs[1], 400, 'tune', 17, BONE, 'middle')}
+{smallcaps(xs[2], 400, 'inject', 17, BONE, 'middle')}
+{t(xs[0], 432, 'The behaviour falls back into the rest.', 15, DIM, SERIF, 'middle')}
+{t(xs[1], 432, 'It is weakened by as much as you choose.', 15, DIM, SERIF, 'middle')}
+{t(xs[2], 432, 'The default moves to where the instructed answers are.', 15, DIM, SERIF, 'middle')}
 '''
     return frame(W, H, body)
 
@@ -372,7 +407,7 @@ def branches():
     return frame(W, H, '\n'.join(p))
 
 
-FIGURES = {'banner': banner, 'phases': phases, 'cut': cut, 'tournament': tournament, 'branches': branches}
+FIGURES = {'banner': banner, 'phases': phases, 'operations': operations, 'cut': cut, 'tournament': tournament, 'branches': branches}
 
 
 def page(svg):

@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use Schism, please cite it as below."
+type: software
+title: "Schism: inject, tune or ablate one behaviour of a language model"
+abstract: >-
+  An agent skill that injects, tunes or ablates one behaviour of a language
+  model by intervening in its weight space and on its internal
+  representations, or through a prompt operator on closed models, and proves
+  that the rest of the model held.
+authors:
+  - family-names: Stronati
+    given-names: Samuele
+    alias: Samuele95
+version: 0.1.0
+date-released: 2026-11-17
+license: MIT
+repository-code: "https://github.com/Samuele95/schism"
+url: "https://samuele95.github.io/schism/"
+keywords:
+  - large language models
+  - abliteration
+  - model editing
+  - interpretability
+  - activation steering
+  - agent skills
